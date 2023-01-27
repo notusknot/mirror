@@ -10,3 +10,9 @@
 {#if $currentUser}
   <Todos />
 {/if}
+
+<style>
+h1 {
+  margin-bottom: 8px;
+}
+</style>
