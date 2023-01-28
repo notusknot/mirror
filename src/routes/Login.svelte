@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { currentUser, pb } from './pocketbase';
+  import { currentUser, pb } from '$lib/pocketbase';
 
   // if you need a comment for this I can't help you
   let username: string;
@@ -49,8 +49,9 @@ form {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  grid-column-gap: 12px;
-  grid-row-gap: 12px; 
+  grid-column-gap: 18px;
+  grid-row-gap: 18px; 
+  margin-top: 18px;
 }
 
 #username { grid-area: 1 / 1 / 2 / 3; }

@@ -1,3 +1,6 @@
+:global(:root){
+   --header-color: purple
+}
 /* https://www.joshwcomeau.com/css/custom-css-reset/ */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -25,8 +28,9 @@ p, h1, h2, h3, h4, h5, h6 {
 #root, #__next {
   isolation: isolate;
 }
+
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
