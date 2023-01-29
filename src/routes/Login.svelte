@@ -38,8 +38,8 @@
   <form on:submit|preventDefault>
     <input id="username" placeholder="Username" type="text" bind:value={username}/>
     <input id="password" placeholder="Password" type="password" bind:value={password}/>
-    <button id="signup" on:click={signUp}>Sign Up</button>
     <button id="login" on:click={login}>Login</button>
+    <button id="signup" on:click={signUp}>Sign Up</button>
   </form>
 
 {/if}
