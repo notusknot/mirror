@@ -70,8 +70,7 @@ h1 {
 
 button, input {
   border-radius: 12px;
-  border: 0px solid black;
-  outline: 3px solid black;
+  border: 3px solid var(--text);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
@@ -79,11 +78,11 @@ button, input {
   color: var(--text);
   background-color: var(--bg2);
   cursor: pointer;
-  transition: outline-color 0.25s;
+  transition: border-color 0.25s;
 }
 
 button:hover, input:hover {
-  outline-color: var(--link);
+  border-color: var(--link);
 }
 
 button:focus,
@@ -92,7 +91,8 @@ button:hover,
 input:focus,
 input:focus-visible,
 input:hover {
-  outline-color: var(--accent);
+  outline:none;
+  border-color: var(--accent);
 }
 
 /* https://www.joshwcomeau.com/css/custom-css-reset/ */
