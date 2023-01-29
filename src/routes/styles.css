@@ -1,6 +1,100 @@
-:global(:root){
-   --header-color: purple
+:root {
+  --text-codes: 33,53,71;
+  --text: rgba(var(--text-codes), 0.87);
+  --accent: #646cff;
+  --bg: #ffffff;
+  --bg2: #f9f9f9;
+  --link: #747bff;
+
+  --padding: 15px;
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-codes: 255, 255, 255;
+    --text: rgba(var(--text-codes), 0.87);
+    --accent: #646cff;
+    --bg: #242424;
+    --bg2: #1a1a1a; 
+    --link: #535bf2;
+  }
+}
+
+:root {
+  font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color-scheme: light dark;
+  color: var(--text);
+  background-color: var(--bg);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+a {
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: inherit;
+}
+a:hover {
+  color: var(--link2);
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+.card {
+  padding: 2em;
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+button, input {
+  border-radius: 12px;
+  border: 0px solid black;
+  outline: 3px solid black;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text);
+  background-color: var(--bg2);
+  cursor: pointer;
+  transition: outline-color 0.25s;
+}
+
+button:hover, input:hover {
+  outline-color: var(--link);
+}
+
+button:focus,
+button:focus-visible,
+button:hover,
+input:focus,
+input:focus-visible,
+input:hover {
+  outline-color: var(--accent);
+}
+
 /* https://www.joshwcomeau.com/css/custom-css-reset/ */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -27,90 +121,4 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 #root, #__next {
   isolation: isolate;
-}
-
-:root {
-  font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-.card {
-  padding: 2em;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-button, input {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover, input:hover {
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible,
-input:focus,
-input:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button, input {
-    background-color: #f9f9f9;
-  }
 }

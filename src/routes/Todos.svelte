@@ -62,31 +62,31 @@
 
 <form on:submit|preventDefault={addTodo}>
   <input placeholder="add something" type="text" bind:value={todoText} />
-  <button type="submit">+</button>
+  <button type="submit"><span id="plus">+</span></button>
 </form>
 
 <style>
 
 :root {
-	 --background: #fff;
-	 --text: #414856;
-	 --check: #4f29f0;
-	 --disabled: #c3c8de;
-	 --width: 100px;
-	 --height: 140px;
+	 --background: var(--bg);
+	 --check: var(--accent);
+	 --disabled: rgba(var(--text-codes), 0.25);
 	 --border-radius: 10px;
 }
+
+form {
+	display: grid;
+	grid-template-columns: auto auto;
+	grid-template-rows: 1fr;
+	grid-column-gap: var(--padding);
+}
+
  .checklist {
-	 background: var(--background);
-	 width: var(--width);
-	 height: var(--height);
-	 border-radius: var(--border-radius);
-	 position: relative;
-	 box-shadow: 0 10px 30px rgba(65, 72, 86, 0.05);
-	 padding: 30px 45px;
-	 display: grid;
-	 grid-template-columns: 30px auto;
-	 align-items: center;
+	border-radius: var(--border-radius);
+	padding: calc(var(--padding) * 1.25) 0;
+	display: grid;
+	grid-template-columns: 30px auto;
+	align-items: center;
 }
  .checklist label {
 	 color: var(--text);
@@ -95,6 +95,7 @@
 	 display: grid;
 	 align-items: center;
 	 width: fit-content;
+	padding: calc(var(--padding) / 2.5) 0;
 	 transition: color 0.3s ease;
 }
  .checklist label::before, .checklist label::after {
