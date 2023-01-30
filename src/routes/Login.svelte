@@ -7,6 +7,8 @@
 
   async function login() {
     await pb.collection('users').authWithPassword(username, password);
+    username = '';
+    password = '';
   }
 
   async function signUp() {
@@ -17,7 +19,7 @@
         // TODO proper password confirmation
         passwordConfirm: password,
       };
-      const createdUser = await pb.collection('users').create(data);
+      await pb.collection('users').create(data);
       await login();
     } catch (err) {
       // TODO elegant error handling
@@ -31,7 +33,6 @@
 
 <!-- conditional rendering of logged in message or login -->
 {#if $currentUser}
-  <p>Signed in as {$currentUser.username}</p>
   <button on:click={signOut}> Sign Out </button>
 
 {:else}
