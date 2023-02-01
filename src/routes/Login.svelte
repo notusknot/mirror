@@ -52,7 +52,6 @@ form {
   grid-template-rows: repeat(3, 1fr);
   grid-column-gap: 18px;
   grid-row-gap: 18px; 
-  margin-top: 18px;
 }
 
 #username { grid-area: 1 / 1 / 2 / 3; }

@@ -3,7 +3,6 @@
   import { currentUser, pb } from '$lib/pocketbase';
 
   let todoText: string;
-  let todoCompleted: boolean;
   let todos = [];
   let unsubscribe: () => void;
 
@@ -25,6 +24,8 @@
         if (action === 'delete') {
           todos = todos.filter((item) => item.id !== record.id);
         }
+        if (action === 'update') {
+        }
       });
   });
 
@@ -35,23 +36,27 @@
   async function addTodo() {
     const data = {
       text: todoText,
-      checked: true,
+      checked: false,
       user: $currentUser.id,
     };
     await pb.collection('todos').create(data);
     todoText = '';
   }
 
-  async function deleteTodo(todo) {
+  async function deleteTodo(todo: any) {
     await pb.collection('todos').delete(todo.id);
+  }
+
+  async function toggleChecked(todo: any) {
+    const update = await pb.collection('todos').update(todo.id, {checked: !todo.checked});    
   }
 </script>
 
 <div>
   {#each todos as todo (todo.id)}
 		<div class="todo">
-		    <input id="checkbox" bind:checked={todoCompleted} type="checkbox">
-		    <label for="checkbox">{todo}</label>
+		    <input type="checkbox" id="checkbox" checked={todo.checked} on:change={toggleChecked(todo)} />
+		    <span class:checked={todo.checked}>{todo.text}</span>
 	    <button on:click={deleteTodo(todo)}>x</button>
 		</div>
   {/each}
@@ -65,6 +70,12 @@
 .todo {
 	display: flex;
 }
+
+/*
+.checked {
+  text-decoration: line-through;
+}
+*/
 
 form {
 	padding: var(--padding) calc(var(--padding) * 2);
