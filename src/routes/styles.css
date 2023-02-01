@@ -90,7 +90,7 @@ button, input {
   transition: border-color 0.25s;
 }
 
-button:hover, input:hover {
+button:hover, input:hover, .checkbox:hover {
   border-color: var(--link);
 }
 
