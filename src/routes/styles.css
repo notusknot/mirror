@@ -88,6 +88,7 @@ button, input {
   background-color: var(--bg2);
   cursor: pointer;
   transition: border-color 0.25s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:hover, input:hover, .checkbox:hover {

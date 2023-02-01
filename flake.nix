@@ -25,7 +25,7 @@
     in
     {
       devShells.default = pkgs.mkShell {
-        buildInputs = with pkgs; [ nodejs nodePackages_latest.svelte-language-server ];
+        buildInputs = with pkgs; [ nodejs deno nodePackages_latest.svelte-language-server ];
 
         shellHook = ''
           echo "node `${pkgs.nodejs}/bin/node --version`"
