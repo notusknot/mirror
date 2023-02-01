@@ -29,6 +29,12 @@ onMount(async () => {
       if (action === 'delete') {
         todos.update((items) => items.filter((item) => item.id !== record.id));
       }
+      if (action === 'update') {
+        const resultList = await pb.collection('todos').getList(1, 50, {
+          sort: 'created',
+        });
+        todos.set(resultList.items as unknown as Todo[]);
+      }
     });
 });
 
@@ -53,8 +59,7 @@ async function deleteTodo(todo: Todo) {
 async function toggleChecked(todo: Todo) {
   const updatedTodo = {...todo, checked: !todo.checked};
   todos.update(items => items.map(item => item.id === todo.id ? updatedTodo : item));
-  await pb.collection('todos').update(todo.id, {checked: !todo.checked});
-}
+  await pb.collection('todos').update(todo.id, {checked: !todo.checked});}
 </script>
 
 <div>
