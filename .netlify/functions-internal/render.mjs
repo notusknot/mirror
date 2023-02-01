@@ -6,7 +6,7 @@ export const handler = init({
 	assets: new Set([]),
 	mimeTypes: {},
 	_: {
-		entry: {"file":"_app/immutable/start-042eff5b.js","imports":["_app/immutable/start-042eff5b.js","_app/immutable/chunks/index-38d68432.js","_app/immutable/chunks/singletons-05a6fadf.js","_app/immutable/chunks/index-ed4ad698.js"],"stylesheets":[],"fonts":[]},
+		entry: {"file":"_app/immutable/start-a0ab3d64.js","imports":["_app/immutable/start-a0ab3d64.js","_app/immutable/chunks/index-f503b28c.js","_app/immutable/chunks/singletons-046e9f17.js","_app/immutable/chunks/index-a017c294.js"],"stylesheets":[],"fonts":[]},
 		nodes: [
 			() => import('../server/nodes/0.js'),
 			() => import('../server/nodes/1.js'),

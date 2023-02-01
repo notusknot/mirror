@@ -27,26 +27,33 @@ ${$currentUser ? `<button>Sign Out </button>` : `<form class="${"svelte-8hmr2f"}
 });
 const Todos_svelte_svelte_type_style_lang = "";
 const css$1 = {
-  code: ".todo.svelte-o5lxtt.svelte-o5lxtt{display:flex}.checked.svelte-o5lxtt.svelte-o5lxtt{text-decoration:line-through}form.svelte-o5lxtt.svelte-o5lxtt{padding:var(--padding) calc(var(--padding) * 2)}form.svelte-o5lxtt input.svelte-o5lxtt{width:100%}",
+  code: ".todo.svelte-1fsmmvv.svelte-1fsmmvv{display:flex}.checked.svelte-1fsmmvv.svelte-1fsmmvv{text-decoration:line-through}form.svelte-1fsmmvv.svelte-1fsmmvv{padding:var(--padding) calc(var(--padding) * 2)}form.svelte-1fsmmvv input.svelte-1fsmmvv{width:100%}",
   map: null
 };
 const Todos = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let $$unsubscribe_currentUser;
+  let $todos, $$unsubscribe_todos;
   $$unsubscribe_currentUser = subscribe(currentUser, (value) => value);
   let todoText;
-  let todos = [];
+  let todos = writable([]);
+  $$unsubscribe_todos = subscribe(todos, (value) => $todos = value);
   onDestroy(() => {
   });
   $$result.css.add(css$1);
   $$unsubscribe_currentUser();
-  return `<div>${each(todos, (todo) => {
-    return `<div class="${"todo svelte-o5lxtt"}"><input type="${"checkbox"}" id="${"checkbox"}" ${todo.checked ? "checked" : ""}>
-		    <span class="${["svelte-o5lxtt", todo.checked ? "checked" : ""].join(" ").trim()}">${escape(todo.text)}</span>
+  $$unsubscribe_todos();
+  return `
+
+
+
+<div>${each($todos, (todo) => {
+    return `<div class="${"todo svelte-1fsmmvv"}"><input type="${"checkbox"}" id="${"checkbox"}" ${todo.checked ? "checked" : ""}>
+		    <span class="${["svelte-1fsmmvv", todo.checked ? "checked" : ""].join(" ").trim()}">${escape(todo.text)}</span>
 	    <button>x</button>
 		</div>`;
   })}</div>
 
-<form class="${"svelte-o5lxtt"}"><input placeholder="${"add something"}" type="${"text"}" class="${"svelte-o5lxtt"}"${add_attribute("value", todoText, 0)}>
+<form class="${"svelte-1fsmmvv"}"><input placeholder="${"add something"}" type="${"text"}" class="${"svelte-1fsmmvv"}"${add_attribute("value", todoText, 0)}>
 </form>`;
 });
 const _page_svelte_svelte_type_style_lang = "";
