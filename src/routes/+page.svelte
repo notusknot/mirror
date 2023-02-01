@@ -10,14 +10,22 @@
 	<meta name="description" content="Todo and notes tailored to my needs" />
 </svelte:head>
 
+<main>
+{#if $currentUser}
+
 <nav>
   <h1>Todo List</h1>
   <Login />
 </nav>
+<Todos />
 
-<main>
-{#if $currentUser}
-  <Todos />
+{:else}
+
+<nav>
+  <h1>Todo List</h1>
+</nav>
+<Login />
+
 {/if}
 </main>
 

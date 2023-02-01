@@ -25,6 +25,7 @@
       const data = {
         username,
         password,
+        passwordConfirm: password,
       };
       await pb.collection('users').create(data);
       await login();
@@ -48,10 +49,11 @@
     <input id="password" placeholder="Password" type="password" bind:value={password}/>
     <button id="login" on:click={login}>Login</button>
     <button id="signup" on:click={signUp}>Sign Up</button>
-    {#if errorMessage}
-      <span class="error">{errorMessage}</span>
-    {/if}
   </form>
+
+  {#if errorMessage}
+    <span class="error">{errorMessage}</span>
+  {/if}
 
 {/if}
 
