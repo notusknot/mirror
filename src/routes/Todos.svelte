@@ -43,6 +43,10 @@ onDestroy(() => {
 });
 
 async function addTodo() {
+  if (!todoText) {
+    return;
+  }
+
   const data = {
     text: todoText,
     checked: false,
@@ -76,7 +80,7 @@ async function toggleChecked(todo: Todo) {
 </div>
 
 <form on:submit|preventDefault={addTodo}>
-  <input placeholder="add something" type="text" bind:value={todoText} on:blur={addTodo} />
+  <input placeholder="add task" type="text" bind:value={todoText} on:blur={addTodo} />
 </form>
 
 <style>

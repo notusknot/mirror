@@ -4,7 +4,7 @@
   // if you need a comment for this I can't help you
   let username: string;
   let password: string;
-  let errorMessage: string = '';
+  let errorMessage = '';
 
   async function login() {
     try {

@@ -1,6 +1,7 @@
 <script lang="ts">
   import Login from './Login.svelte';
   import Todos from './Todos.svelte';
+  import Journal from './Journal.svelte';
   import './styles.css';
   import { currentUser } from "$lib/pocketbase";
 </script>
@@ -10,23 +11,20 @@
 	<meta name="description" content="Todo and notes tailored to my needs" />
 </svelte:head>
 
+<nav>
+  <h1>Todo List</h1>
+  {#if $currentUser}
+    <Login />
+  {/if}
+</nav>
+
 <main>
-{#if $currentUser}
-
-<nav>
-  <h1>Todo List</h1>
-  <Login />
-</nav>
-<Todos />
-
-{:else}
-
-<nav>
-  <h1>Todo List</h1>
-</nav>
-<Login />
-
-{/if}
+  {#if $currentUser}
+    <Todos />
+    <!-- <Journal /> -->
+  {:else}
+    <Login />
+  {/if}
 </main>
 
 <style>
