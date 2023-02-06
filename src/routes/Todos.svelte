@@ -16,13 +16,11 @@ let unsubscribe: () => void;
 
 onMount(async () => {
   // Get initial items
-  const resultList = await pb.collection('todos').getList(1, 50, {
-    sort: 'created',
-  });
-  todos.set(resultList.items as unknown as Todo[]);
-  unsubscribe = await pb
-    .collection('todos')
-    .subscribe('*', async ({ action, record }) => {
+  const [initialTodos, subscribeFunc] = await Promise.all([
+    pb.collection('todos').getList(1, 50, {
+      sort: 'created',
+    }),
+    pb.collection('todos').subscribe('*', async ({ action, record }) => {
       if (action === 'create') {
         todos.update((items) => [...items, record as unknown as Todo]);
       }
@@ -35,7 +33,10 @@ onMount(async () => {
         });
         todos.set(resultList.items as unknown as Todo[]);
       }
-    });
+    })
+  ]);
+  todos.set(initialTodos.items as unknown as Todo[]);
+  unsubscribe = subscribeFunc;
 });
 
 onDestroy(() => {
@@ -74,7 +75,9 @@ async function toggleChecked(todo: Todo) {
           <span class="checkmark"></span>
         </label>
 		    <span class="todo-text" class:checked={todo.checked}>{todo.text}</span>
-	    <button on:click={() => deleteTodo(todo)}>x</button>
+	    <button class="icon-button" on:click={() => deleteTodo(todo)}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 15 15"><path fill="currentColor" d="M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27Z"></path></svg>      
+      </button>
 		</div>
   {/each}
 </div>
@@ -95,14 +98,6 @@ async function toggleChecked(todo: Todo) {
   width: 100%;
 }
 
-button {
-  padding: 0px;
-  min-width: 24px;
-  height: 24px;
-  border: none;
-  background-color: var(--bg);
-}
-
 .checkbox {
   display: inline-block;
   position: relative;
@@ -110,7 +105,6 @@ button {
   height: 24px;
   border: 3px solid var(--text);
   border-radius: 8px;
-  transition: all 0.2s;
   cursor: pointer;
 }
 
@@ -147,7 +141,6 @@ button {
 .checked {
   text-decoration: line-through;
 }
-
 
 form {
 	padding: var(--padding) calc(var(--padding) * 2);

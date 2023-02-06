@@ -5,12 +5,19 @@
 * {
   margin: 0;
   line-height: calc(1em + 0.5rem);
+  -webkit-transition: border-color 250ms, background-color 250ms;
+  -moz-transition: border-color 250ms, background-color 250ms;
+  -o-transition: border-color 250ms, background-color 250ms;
+  transition: border-color 250ms, background-color 250ms;
 }
+
 html, body {
   height: 100%;
 }
 body {
   -webkit-font-smoothing: antialiased;
+  color: var(--text);
+  background-color: var(--bg);
 }
 img, picture, video, canvas, svg {
   display: block;
@@ -21,21 +28,44 @@ input, button, textarea, select {
 }
 p, h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
+  transition: color 25ms;
 }
 #app {
   isolation: isolate;
 }
 
 :root {
+  --padding: 15px;
   --text-codes: 33,53,71;
   --text: rgba(var(--text-codes), 0.87);
   --accent: #646cff;
   --bg: #ffffff;
   --bg2: #f9f9f9;
   --link: #747bff;
-
-  --padding: 15px;
 }
+
+html[data-theme="dark"] {
+  --text-codes: 255, 255, 255;
+  --text: rgba(var(--text-codes), 0.87);
+  --accent: #646cff;
+  --bg: #242424;
+  --bg2: #1a1a1a; 
+  --link: #535bf2;
+}
+
+html[data-theme="light"] .light-button {
+  display: none;
+}
+html[data-theme="dark"] .dark-button {
+  display: none;
+}
+html[data-theme="light"] .dark-button{
+  display: block;
+}
+html[data-theme="dark"] .light-button{
+  display: block;
+}
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -46,13 +76,14 @@ p, h1, h2, h3, h4, h5, h6 {
     --bg2: #1a1a1a; 
     --link: #535bf2;
   }
+  .dark-button {
+    display: none;
+  }
 }
 
 :root {
   font-family: Inter, Roboto, Helvetica, Arial, sans-serif;
   color-scheme: light dark;
-  color: var(--text);
-  background-color: var(--bg);
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
@@ -70,11 +101,7 @@ a:hover {
 
 main {
   width: 320px;
-  margin: 0 auto;;
-}
-
-h1 {
-  font-size: 3.2em;
+  margin: var(--padding) auto;
 }
 
 button, input {
@@ -87,7 +114,6 @@ button, input {
   color: var(--text);
   background-color: var(--bg2);
   cursor: pointer;
-  transition: border-color 0.25s;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -103,4 +129,12 @@ input:focus-visible,
 input:hover {
   outline:none;
   border-color: var(--accent);
+}
+
+.icon-button {
+  padding: 0px;
+  min-width: 24px;
+  height: 24px;
+  border: none;
+  background-color: var(--bg);
 }
