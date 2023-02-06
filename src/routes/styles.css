@@ -53,6 +53,10 @@ html[data-theme="dark"] {
   --link: #535bf2;
 }
 
+.light-button {
+  display: none;
+}
+
 html[data-theme="light"] .light-button {
   display: none;
 }
@@ -75,9 +79,6 @@ html[data-theme="dark"] .light-button{
     --bg: #242424;
     --bg2: #1a1a1a; 
     --link: #535bf2;
-  }
-  .dark-button {
-    display: none;
   }
 }
 
