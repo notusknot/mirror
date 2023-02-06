@@ -83,7 +83,7 @@ async function toggleChecked(todo: Todo) {
 </div>
 
 <form on:submit|preventDefault={addTodo}>
-  <input placeholder="add task" type="text" bind:value={todoText} on:blur={addTodo} />
+  <input autocomplete="off" placeholder="add task" type="text" bind:value={todoText} on:blur={addTodo} />
 </form>
 
 <style>

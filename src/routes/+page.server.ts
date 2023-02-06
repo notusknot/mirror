@@ -4,7 +4,7 @@ import type { Actions } from "./$types";
 export const actions: Actions = {
 	setTheme: async ({ url, cookies }) => {
 		const theme = url.searchParams.get("theme");
-    console.log(theme);
+		console.log(theme);
 		const redirectTo = url.searchParams.get("redirectTo");
 
 		if (theme) {

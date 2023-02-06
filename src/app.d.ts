@@ -7,8 +7,8 @@ declare global {
 		// interface PageData {}
 		// interface Platform {}
 		interface Locals {
-	    pb: PocketBase
-	  }
+			pb: PocketBase;
+		}
 	}
 }
 

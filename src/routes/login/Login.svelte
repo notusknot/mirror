@@ -4,34 +4,7 @@
   let username: string;
   let password: string;
   let errorMessage = '';
-/*
-  async function login() {
-    try {
-      await pb.collection('users').authWithPassword(username, password);
-      username = '';
-      password = '';
-    } catch (err: any) {
-      errorMessage = err.message;
-    }
-  }
-  async function signUp() {
-    try {
-      const passwordLength = 8;
-      if (password.length < passwordLength) {
-        throw new Error(`Password must be at least ${passwordLength} characters long.`);
-      }
-      const data = {
-        username,
-        password,
-        passwordConfirm: password,
-      };
-      await pb.collection('users').create(data);
-      await login();
-    } catch (err: any) {
-      errorMessage = err.message;
-    }
-  }
-  */
+
   async function login() {
   return new Promise(async (resolve, reject) => {
     try {
