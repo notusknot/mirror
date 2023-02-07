@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Login from './Login.svelte';
+	import Login from "./Login.svelte";
 </script>
 
 <svelte:head>
@@ -8,18 +8,18 @@
 </svelte:head>
 
 <nav>
-  <h1>Todo List</h1>
+	<h1>Todo List</h1>
 </nav>
 
 <main>
-  <Login />
+	<Login />
 </main>
 
 <style>
-nav {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: var(--padding);
-}
+	nav {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		padding: var(--padding);
+	}
 </style>

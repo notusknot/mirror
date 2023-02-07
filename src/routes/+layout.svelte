@@ -1,5 +1,5 @@
 <script lang="ts">
-	import './styles.css'
+	import "./styles.css";
 </script>
 
 <svelte:head>
@@ -7,6 +7,4 @@
 	<meta name="description" content="Todo and notes tailored to my needs" />
 </svelte:head>
 
-<div id="app">
-  <slot />
-</div>
+<slot />
