@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
-	import { currentUser, pb } from "$lib/pocketbase";
 	import { writable } from "svelte/store";
 
 	type Todo = {
@@ -53,7 +52,7 @@
 		const data = {
 			text: todoText,
 			checked: false,
-			user: $currentUser ? $currentUser.id : "",
+			user: $data.user ? $data.user.id : "",
 		};
 		await pb.collection("todos").create(data);
 		todoText = "";
@@ -68,6 +67,12 @@
 		todos.update((items) =>
 			items.map((item) => (item.id === todo.id ? updatedTodo : item))
 		);
+/*
+		todos.update((items) => [
+		  ...items.filter((item) => item.checked === false),
+		  ...items.filter((item) => item.checked === true),
+		].map((item) => (item.id === todo.id ? updatedTodo : item)))
+*/
 		await pb.collection("todos").update(todo.id, { checked: !todo.checked });
 	}
 
@@ -185,15 +190,5 @@ span {
 
 .checkbox input[type="checkbox"]:checked ~ .checkmark:after {
   display: block;
-}
-
-form {
-  padding: var(--padding) calc(var(--padding) * 2);
-	position: relative;
-	bottom: 0;
-}
-
-form input {
-  width: 100%;
 }
 </style>

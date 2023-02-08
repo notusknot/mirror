@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
-	import { currentUser, pb } from "$lib/pocketbase";
 	import { writable } from "svelte/store";
 
 	type Journal = {

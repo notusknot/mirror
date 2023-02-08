@@ -125,12 +125,11 @@ input {
 	border-radius: calc(var(--padding) * 2 / 3);
 	border: 1px solid var(--bg3);
 	padding: 0.6em 1em;
-	font-size: 1em;
 	font-weight: 500;
-	font-family: inherit;
 	color: var(--text);
 	background-color: var(--bg2);
 	cursor: pointer;
+	max-height: 45px;
 	-webkit-tap-highlight-color: transparent;
 }
 
@@ -201,4 +200,12 @@ main {
 	.journal {
 		width: clamp(0px, calc(100vw - var(--padding) * 2), 460px);
 	}
+}
+
+form {
+  padding: 0 calc(var(--padding) * 2);
+}
+
+form input {
+  width: 100%;
 }

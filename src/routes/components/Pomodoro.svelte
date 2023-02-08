@@ -113,11 +113,11 @@
   .input-container {
     display: flex;
     align-items: center;
-    margin: 10px 0;
+    margin: var(--padding) 0;
   }
 
   label {
-    margin-right: 10px;
+    margin-right: var(--padding);
   }
 </style>
 
