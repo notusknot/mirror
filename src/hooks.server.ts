@@ -1,5 +1,15 @@
 import type { Handle } from "@sveltejs/kit";
 
+const securityHeaders = {
+	'Content-Security-Policy': "default-src 'self' vitals.vercel-insights.com",
+    'Cross-Origin-Embedder-Policy': 'require-corp',
+    'Cross-Origin-Opener-Policy': 'same-origin',
+	'X-Frame-Options': 'SAMEORIGIN',
+	'X-Content-Type-Options': 'nosniff',
+	'Referrer-Policy': 'strict-origin',
+    'X-XSS-Protection': '0',
+}
+
 export const handle = (async ({ event, resolve }) => {
 	let theme: string | null = null;
 
@@ -19,5 +29,11 @@ export const handle = (async ({ event, resolve }) => {
 		});
 	}
 
-	return await resolve(event);
+	const response = await resolve(event);
+
+	Object.entries(securityHeaders).forEach(
+        ([header, value]) => response.headers.set(header, value)
+    );
+
+	return response;
 }) satisfies Handle;
