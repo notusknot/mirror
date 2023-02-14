@@ -207,9 +207,10 @@ var init_utils = __esm({
 });
 
 // node_modules/devalue/src/uneval.js
-function uneval(value) {
+function uneval(value, replacer) {
   const counts = /* @__PURE__ */ new Map();
   const keys = [];
+  const custom = /* @__PURE__ */ new Map();
   function walk(thing) {
     if (typeof thing === "function") {
       throw new DevalueError(`Cannot stringify a function`, keys);
@@ -220,6 +221,13 @@ function uneval(value) {
         return;
       }
       counts.set(thing, 1);
+      if (replacer) {
+        const str2 = replacer(thing);
+        if (typeof str2 === "string") {
+          custom.set(thing, str2);
+          return;
+        }
+      }
       const type = get_type(thing);
       switch (type) {
         case "Number":
@@ -281,6 +289,9 @@ function uneval(value) {
     if (is_primitive(thing)) {
       return stringify_primitive(thing);
     }
+    if (custom.has(thing)) {
+      return custom.get(thing);
+    }
     const type = get_type(thing);
     switch (type) {
       case "Number":
@@ -319,6 +330,13 @@ function uneval(value) {
     const values = [];
     names.forEach((name, thing) => {
       params.push(name);
+      if (custom.has(thing)) {
+        values.push(
+          /** @type {string} */
+          custom.get(thing)
+        );
+        return;
+      }
       if (is_primitive(thing)) {
         values.push(stringify_primitive(thing));
         return;
@@ -438,9 +456,13 @@ var init_parse = __esm({
 });
 
 // node_modules/devalue/src/stringify.js
-function stringify(value) {
+function stringify(value, reducers) {
   const stringified = [];
   const indexes = /* @__PURE__ */ new Map();
+  const custom = [];
+  for (const key2 in reducers) {
+    custom.push({ key: key2, fn: reducers[key2] });
+  }
   const keys = [];
   let p2 = 0;
   function flatten(thing) {
@@ -461,6 +483,13 @@ function stringify(value) {
       return NEGATIVE_ZERO;
     const index6 = p2++;
     indexes.set(thing, index6);
+    for (const { key: key2, fn } of custom) {
+      const value2 = fn(thing);
+      if (value2) {
+        stringified[index6] = `["${key2}",${flatten(value2)}]`;
+        return index6;
+      }
+    }
     let str = "";
     if (is_primitive(thing)) {
       str = stringify_primitive2(thing);
@@ -613,29 +642,6 @@ function subscribe(store, ...callbacks) {
 function null_to_empty(value) {
   return value == null ? "" : value;
 }
-function run_tasks(now2) {
-  tasks.forEach((task) => {
-    if (!task.c(now2)) {
-      tasks.delete(task);
-      task.f();
-    }
-  });
-  if (tasks.size !== 0)
-    raf(run_tasks);
-}
-function loop(callback) {
-  let task;
-  if (tasks.size === 0)
-    raf(run_tasks);
-  return {
-    promise: new Promise((fulfill) => {
-      tasks.add(task = { c: callback, f: fulfill });
-    }),
-    abort() {
-      tasks.delete(task);
-    }
-  };
-}
 function set_current_component(component5) {
   current_component = component5;
 }
@@ -709,7 +715,7 @@ function create_ssr_component(fn) {
       return {
         html,
         css: {
-          code: Array.from(result.css).map((css4) => css4.code).join("\n"),
+          code: Array.from(result.css).map((css5) => css5.code).join("\n"),
           map: null
           // TODO
         },
@@ -725,13 +731,9 @@ function add_attribute(name, value, boolean) {
   const assignment = boolean && value === true ? "" : `="${escape(value, true)}"`;
   return ` ${name}${assignment}`;
 }
-var is_client, now, raf, tasks, current_component, ATTR_REGEX, CONTENT_REGEX, missing_component, on_destroy;
+var current_component, ATTR_REGEX, CONTENT_REGEX, missing_component, on_destroy;
 var init_index3 = __esm({
   ".svelte-kit/output/server/chunks/index3.js"() {
-    is_client = typeof window !== "undefined";
-    now = is_client ? () => window.performance.now() : () => Date.now();
-    raf = is_client ? (cb) => requestAnimationFrame(cb) : noop;
-    tasks = /* @__PURE__ */ new Set();
     Promise.resolve();
     ATTR_REGEX = /[&"]/g;
     CONTENT_REGEX = /[&<]/g;
@@ -818,7 +820,8 @@ var init_hooks_server = __esm({
           transformPageChunk: ({ html }) => html.replace('data-theme=""', `data-theme="${theme}"`)
         });
       }
-      return await resolve(event);
+      const response = await resolve(event);
+      return response;
     };
   }
 });
@@ -1126,131 +1129,6 @@ var require_set_cookie = __commonJS({
     module.exports.parse = parse3;
     module.exports.parseString = parseString2;
     module.exports.splitCookiesString = splitCookiesString2;
-  }
-});
-
-// .svelte-kit/output/server/entries/pages/_layout.svelte.js
-var layout_svelte_exports = {};
-__export(layout_svelte_exports, {
-  default: () => Layout
-});
-var Layout;
-var init_layout_svelte = __esm({
-  ".svelte-kit/output/server/entries/pages/_layout.svelte.js"() {
-    init_index3();
-    Layout = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      return `${$$result.head += `<!-- HEAD_svelte-10ckgw5_START -->${$$result.title = `<title>Productivity</title>`, ""}<meta name="${"description"}" content="${"Todo and notes tailored to my needs"}"><!-- HEAD_svelte-10ckgw5_END -->`, ""}
-
-${slots.default ? slots.default({}) : ``}`;
-    });
-  }
-});
-
-// .svelte-kit/output/server/nodes/0.js
-var __exports = {};
-__export(__exports, {
-  component: () => component,
-  file: () => file,
-  fonts: () => fonts,
-  imports: () => imports,
-  index: () => index,
-  stylesheets: () => stylesheets
-});
-var index, component, file, imports, stylesheets, fonts;
-var init__ = __esm({
-  ".svelte-kit/output/server/nodes/0.js"() {
-    index = 0;
-    component = async () => (await Promise.resolve().then(() => (init_layout_svelte(), layout_svelte_exports))).default;
-    file = "_app/immutable/components/pages/_layout.svelte-843371a9.js";
-    imports = ["_app/immutable/components/pages/_layout.svelte-843371a9.js", "_app/immutable/chunks/index-5bbd1ec6.js"];
-    stylesheets = ["_app/immutable/assets/_layout-1b2d9c29.css"];
-    fonts = [];
-  }
-});
-
-// .svelte-kit/output/server/entries/fallbacks/error.svelte.js
-var error_svelte_exports = {};
-__export(error_svelte_exports, {
-  default: () => Error$1
-});
-var getStores, page, Error$1;
-var init_error_svelte = __esm({
-  ".svelte-kit/output/server/entries/fallbacks/error.svelte.js"() {
-    init_index3();
-    getStores = () => {
-      const stores = getContext("__svelte__");
-      return {
-        page: {
-          subscribe: stores.page.subscribe
-        },
-        navigating: {
-          subscribe: stores.navigating.subscribe
-        },
-        updated: stores.updated
-      };
-    };
-    page = {
-      /** @param {(value: any) => void} fn */
-      subscribe(fn) {
-        const store = getStores().page;
-        return store.subscribe(fn);
-      }
-    };
-    Error$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $page, $$unsubscribe_page;
-      $$unsubscribe_page = subscribe(page, (value) => $page = value);
-      $$unsubscribe_page();
-      return `<h1>${escape($page.status)}</h1>
-<p>${escape($page.error?.message)}</p>`;
-    });
-  }
-});
-
-// .svelte-kit/output/server/nodes/1.js
-var __exports2 = {};
-__export(__exports2, {
-  component: () => component2,
-  file: () => file2,
-  fonts: () => fonts2,
-  imports: () => imports2,
-  index: () => index2,
-  stylesheets: () => stylesheets2
-});
-var index2, component2, file2, imports2, stylesheets2, fonts2;
-var init__2 = __esm({
-  ".svelte-kit/output/server/nodes/1.js"() {
-    index2 = 1;
-    component2 = async () => (await Promise.resolve().then(() => (init_error_svelte(), error_svelte_exports))).default;
-    file2 = "_app/immutable/components/error.svelte-15cb4ab6.js";
-    imports2 = ["_app/immutable/components/error.svelte-15cb4ab6.js", "_app/immutable/chunks/index-5bbd1ec6.js", "_app/immutable/chunks/singletons-e9d9c1e5.js", "_app/immutable/chunks/index-7a540288.js"];
-    stylesheets2 = [];
-    fonts2 = [];
-  }
-});
-
-// .svelte-kit/output/server/entries/pages/_page.server.ts.js
-var page_server_ts_exports = {};
-__export(page_server_ts_exports, {
-  actions: () => actions
-});
-var actions;
-var init_page_server_ts = __esm({
-  ".svelte-kit/output/server/entries/pages/_page.server.ts.js"() {
-    init_chunks();
-    actions = {
-      setTheme: async ({ url, cookies }) => {
-        const theme = url.searchParams.get("theme");
-        console.log(theme);
-        const redirectTo = url.searchParams.get("redirectTo");
-        if (theme) {
-          cookies.set("colortheme", theme, {
-            path: "/",
-            maxAge: 60 * 60 * 24 * 365
-          });
-        }
-        throw redirect(303, redirectTo ?? "/");
-      }
-    };
   }
 });
 
@@ -2282,21 +2160,28 @@ var init_pocketbase_es = __esm({
   }
 });
 
-// .svelte-kit/output/server/chunks/Login.js
-var pb, currentUser, css, Login;
-var init_Login = __esm({
-  ".svelte-kit/output/server/chunks/Login.js"() {
-    init_index3();
+// .svelte-kit/output/server/chunks/pocketbase.js
+var pb, currentUser;
+var init_pocketbase = __esm({
+  ".svelte-kit/output/server/chunks/pocketbase.js"() {
     init_pocketbase_es();
     init_index2();
     pb = new C("https://api.notusknot.com:443");
     currentUser = writable(pb.authStore.model);
-    pb.authStore.onChange((auth) => {
-      console.log("authStore changed", auth);
+    pb.authStore.onChange(() => {
       currentUser.set(pb.authStore.model);
     });
+  }
+});
+
+// .svelte-kit/output/server/chunks/Login.js
+var css, Login;
+var init_Login = __esm({
+  ".svelte-kit/output/server/chunks/Login.js"() {
+    init_index3();
+    init_pocketbase();
     css = {
-      code: "form.svelte-1hgs75k{display:grid;grid-template-columns:repeat(2, 1fr);grid-template-rows:repeat(3, 1fr);grid-column-gap:18px;grid-row-gap:18px}.error.svelte-1hgs75k{color:red}#username.svelte-1hgs75k{grid-area:1 / 1 / 2 / 3}#password.svelte-1hgs75k{grid-area:2 / 1 / 3 / 3}#login.svelte-1hgs75k{grid-area:3 / 1 / 4 / 2}#signup.svelte-1hgs75k{grid-area:3 / 2 / 4 / 3}",
+      code: "div.svelte-rcadj0{height:clamp(160px, 100%, 480px)}form.svelte-rcadj0{display:grid;grid-template-columns:repeat(2, 1fr);grid-template-rows:repeat(3, 1fr);grid-column-gap:18px;grid-row-gap:18px}.error.svelte-rcadj0{color:red}#username.svelte-rcadj0{grid-area:1 / 1 / 2 / 3}#password.svelte-rcadj0{grid-area:2 / 1 / 3 / 3}#login.svelte-rcadj0{grid-area:3 / 1 / 4 / 2}#signup.svelte-rcadj0{grid-area:3 / 2 / 4 / 3}",
       map: null
     };
     Login = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -2306,14 +2191,178 @@ var init_Login = __esm({
       let password;
       $$result.css.add(css);
       $$unsubscribe_currentUser();
-      return `
-${$currentUser ? `<button>Sign Out </button>` : `<form class="${"svelte-1hgs75k"}"><input id="${"username"}" placeholder="${"Username"}" type="${"text"}" class="${"svelte-1hgs75k"}"${add_attribute("value", username, 0)}>
-		<input id="${"password"}" placeholder="${"Password"}" type="${"password"}" class="${"svelte-1hgs75k"}"${add_attribute("value", password, 0)}>
-		<button id="${"login"}" class="${"svelte-1hgs75k"}">Login</button>
-		<button id="${"signup"}" class="${"svelte-1hgs75k"}">Sign Up</button></form>
+      return `${$currentUser ? `<button>Sign Out </button>` : `<div class="${"login svelte-rcadj0"}"><form class="${"svelte-rcadj0"}"><input id="${"username"}" placeholder="${"Username"}" type="${"text"}" class="${"svelte-rcadj0"}"${add_attribute("value", username, 0)}>
+			<input id="${"password"}" placeholder="${"Password"}" type="${"password"}" class="${"svelte-rcadj0"}"${add_attribute("value", password, 0)}>
+			<button id="${"login"}" class="${"svelte-rcadj0"}">Login</button>
+			<button id="${"signup"}" class="${"svelte-rcadj0"}">Sign Up</button></form>
 
-	${``}`}`;
+		${``}</div>`}`;
     });
+  }
+});
+
+// .svelte-kit/output/server/entries/pages/_layout.svelte.js
+var layout_svelte_exports = {};
+__export(layout_svelte_exports, {
+  default: () => Layout
+});
+var css$1, Boop, css2, Layout;
+var init_layout_svelte = __esm({
+  ".svelte-kit/output/server/entries/pages/_layout.svelte.js"() {
+    init_index3();
+    init_pocketbase();
+    init_devalue();
+    init_Login();
+    css$1 = {
+      code: "@keyframes svelte-367r4o-wiggle{0%{transform:rotate(0deg)}20%{transform:rotate(-15deg)}40%{transform:rotate(15deg)}60%{transform:rotate(-7deg)}80%{transform:rotate(7deg)}90%{transform:rotate(-3deg)}95%{transform:rotate(2deg)}100%{transform:rotate(0deg)}}.boop.svelte-367r4o{display:inline-block;will-change:transform}.boop.active.svelte-367r4o{animation-duration:1s;animation-play-state:paused;animation-fill-mode:forwards}.boop.wiggle.svelte-367r4o{animation-name:svelte-367r4o-wiggle;animation-play-state:running}",
+      map: null
+    };
+    Boop = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      $$result.css.add(css$1);
+      return `<span class="${[
+        escape(null_to_empty(`boop${""}`), true) + " svelte-367r4o",
+        ""
+      ].join(" ").trim()}" style="${"--animation: boop"}">${slots.default ? slots.default({}) : ``}
+</span>`;
+    });
+    css2 = {
+      code: "main.svelte-14rdqgu.svelte-14rdqgu{padding:var(--padding);height:calc(100% - var(--header-height));display:flex;align-items:center;flex-direction:column}header.svelte-14rdqgu.svelte-14rdqgu{display:flex;align-items:center;justify-content:space-between;padding:var(--padding);border-bottom:1px solid var(--bg3)}header.svelte-14rdqgu div.svelte-14rdqgu{display:flex}header.svelte-14rdqgu form.svelte-14rdqgu{display:flex;align-items:center}a.svelte-14rdqgu.svelte-14rdqgu{color:var(--text);text-decoration:none}.icon-button.svelte-14rdqgu.svelte-14rdqgu{font-size:2rem;height:2rem;padding:0 var(--padding);background-color:transparent}",
+      map: null
+    };
+    Layout = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let $currentUser, $$unsubscribe_currentUser;
+      $$unsubscribe_currentUser = subscribe(currentUser, (value) => $currentUser = value);
+      $$result.css.add(css2);
+      $$unsubscribe_currentUser();
+      return `${$$result.head += `<!-- HEAD_svelte-10ckgw5_START -->${$$result.title = `<title>Productivity</title>`, ""}<meta name="${"description"}" content="${"Todo and notes tailored to my needs"}"><!-- HEAD_svelte-10ckgw5_END -->`, ""}
+
+<header class="${"svelte-14rdqgu"}"><button><a href="${"/journal"}" class="${"svelte-14rdqgu"}">Journal</a></button>
+
+	<div class="${"svelte-14rdqgu"}"><form method="${"POST"}" class="${"svelte-14rdqgu"}">${validate_component(Boop, "Boop").$$render($$result, {}, {}, {
+        default: () => {
+          return `<button aria-label="${"enable-light-mode"}" class="${"icon-button light-button svelte-14rdqgu"}" formaction="${"/?/setTheme&theme=light"}"><svg xmlns="${"http://www.w3.org/2000/svg"}" width="${"1em"}" height="${"1em"}" viewBox="${"0 0 24 24"}"><path fill="${"currentColor"}" d="${"M12 15q1.25 0 2.125-.875T15 12q0-1.25-.875-2.125T12 9q-1.25 0-2.125.875T9 12q0 1.25.875 2.125T12 15Zm0 2q-2.075 0-3.537-1.463Q7 14.075 7 12t1.463-3.538Q9.925 7 12 7t3.538 1.462Q17 9.925 17 12q0 2.075-1.462 3.537Q14.075 17 12 17ZM2 13q-.425 0-.712-.288Q1 12.425 1 12t.288-.713Q1.575 11 2 11h2q.425 0 .713.287Q5 11.575 5 12t-.287.712Q4.425 13 4 13Zm18 0q-.425 0-.712-.288Q19 12.425 19 12t.288-.713Q19.575 11 20 11h2q.425 0 .712.287q.288.288.288.713t-.288.712Q22.425 13 22 13Zm-8-8q-.425 0-.712-.288Q11 4.425 11 4V2q0-.425.288-.713Q11.575 1 12 1t.713.287Q13 1.575 13 2v2q0 .425-.287.712Q12.425 5 12 5Zm0 18q-.425 0-.712-.288Q11 22.425 11 22v-2q0-.425.288-.712Q11.575 19 12 19t.713.288Q13 19.575 13 20v2q0 .425-.287.712Q12.425 23 12 23ZM5.65 7.05L4.575 6q-.3-.275-.288-.7q.013-.425.288-.725q.3-.3.725-.3t.7.3L7.05 5.65q.275.3.275.7q0 .4-.275.7q-.275.3-.687.287q-.413-.012-.713-.287ZM18 19.425l-1.05-1.075q-.275-.3-.275-.712q0-.413.275-.688q.275-.3.688-.287q.412.012.712.287L19.425 18q.3.275.288.7q-.013.425-.288.725q-.3.3-.725.3t-.7-.3ZM16.95 7.05q-.3-.275-.287-.688q.012-.412.287-.712L18 4.575q.275-.3.7-.288q.425.013.725.288q.3.3.3.725t-.3.7L18.35 7.05q-.3.275-.7.275q-.4 0-.7-.275ZM4.575 19.425q-.3-.3-.3-.725t.3-.7l1.075-1.05q.3-.275.713-.275q.412 0 .687.275q.3.275.288.688q-.013.412-.288.712L6 19.425q-.275.3-.7.287q-.425-.012-.725-.287ZM12 12Z"}"></path></svg></button>`;
+        }
+      })}
+
+			${validate_component(Boop, "Boop").$$render($$result, {}, {}, {
+        default: () => {
+          return `<button aria-label="${"enable-dark-mode"}" class="${"icon-button dark-button svelte-14rdqgu"}" formaction="${"/?/setTheme&theme=dark"}"><svg xmlns="${"http://www.w3.org/2000/svg"}" width="${"1em"}" height="${"1em"}" viewBox="${"0 0 24 24"}"><path fill="${"currentColor"}" d="${"M12 21q-3.775 0-6.388-2.613Q3 15.775 3 12q0-3.45 2.25-5.988Q7.5 3.475 11 3.05q.625-.075.975.45t-.025 1.1q-.425.65-.638 1.375Q11.1 6.7 11.1 7.5q0 2.25 1.575 3.825Q14.25 12.9 16.5 12.9q.775 0 1.538-.225q.762-.225 1.362-.625q.525-.35 1.075-.038q.55.313.475.988q-.35 3.45-2.937 5.725Q15.425 21 12 21Zm0-2q2.2 0 3.95-1.212q1.75-1.213 2.55-3.163q-.5.125-1 .2q-.5.075-1 .075q-3.075 0-5.238-2.162Q9.1 10.575 9.1 7.5q0-.5.075-1t.2-1q-1.95.8-3.162 2.55Q5 9.8 5 12q0 2.9 2.05 4.95Q9.1 19 12 19Zm-.25-6.75Z"}"></path></svg></button>`;
+        }
+      })}</form>
+
+		${$currentUser ? `${validate_component(Login, "Login").$$render($$result, {}, {}, {})}` : ``}</div></header>
+
+<main class="${"svelte-14rdqgu"}">${slots.default ? slots.default({}) : ``}
+</main>`;
+    });
+  }
+});
+
+// .svelte-kit/output/server/nodes/0.js
+var __exports = {};
+__export(__exports, {
+  component: () => component,
+  file: () => file,
+  fonts: () => fonts,
+  imports: () => imports,
+  index: () => index,
+  stylesheets: () => stylesheets
+});
+var index, component, file, imports, stylesheets, fonts;
+var init__ = __esm({
+  ".svelte-kit/output/server/nodes/0.js"() {
+    index = 0;
+    component = async () => (await Promise.resolve().then(() => (init_layout_svelte(), layout_svelte_exports))).default;
+    file = "_app/immutable/components/pages/_layout.svelte-ae9733ae.js";
+    imports = ["_app/immutable/components/pages/_layout.svelte-ae9733ae.js", "_app/immutable/chunks/index-cdc99104.js", "_app/immutable/chunks/pocketbase-e2ca09db.js", "_app/immutable/chunks/parse-a9b5aeea.js", "_app/immutable/chunks/singletons-83248bbb.js", "_app/immutable/chunks/Login-f46a1d5e.js"];
+    stylesheets = ["_app/immutable/assets/_layout-a90f38c6.css", "_app/immutable/assets/Login-a6eabac3.css"];
+    fonts = [];
+  }
+});
+
+// .svelte-kit/output/server/entries/fallbacks/error.svelte.js
+var error_svelte_exports = {};
+__export(error_svelte_exports, {
+  default: () => Error$1
+});
+var getStores, page, Error$1;
+var init_error_svelte = __esm({
+  ".svelte-kit/output/server/entries/fallbacks/error.svelte.js"() {
+    init_index3();
+    getStores = () => {
+      const stores = getContext("__svelte__");
+      return {
+        page: {
+          subscribe: stores.page.subscribe
+        },
+        navigating: {
+          subscribe: stores.navigating.subscribe
+        },
+        updated: stores.updated
+      };
+    };
+    page = {
+      /** @param {(value: any) => void} fn */
+      subscribe(fn) {
+        const store = getStores().page;
+        return store.subscribe(fn);
+      }
+    };
+    Error$1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let $page, $$unsubscribe_page;
+      $$unsubscribe_page = subscribe(page, (value) => $page = value);
+      $$unsubscribe_page();
+      return `<h1>${escape($page.status)}</h1>
+<p>${escape($page.error?.message)}</p>`;
+    });
+  }
+});
+
+// .svelte-kit/output/server/nodes/1.js
+var __exports2 = {};
+__export(__exports2, {
+  component: () => component2,
+  file: () => file2,
+  fonts: () => fonts2,
+  imports: () => imports2,
+  index: () => index2,
+  stylesheets: () => stylesheets2
+});
+var index2, component2, file2, imports2, stylesheets2, fonts2;
+var init__2 = __esm({
+  ".svelte-kit/output/server/nodes/1.js"() {
+    index2 = 1;
+    component2 = async () => (await Promise.resolve().then(() => (init_error_svelte(), error_svelte_exports))).default;
+    file2 = "_app/immutable/components/error.svelte-bd45e6e5.js";
+    imports2 = ["_app/immutable/components/error.svelte-bd45e6e5.js", "_app/immutable/chunks/index-cdc99104.js", "_app/immutable/chunks/singletons-83248bbb.js"];
+    stylesheets2 = [];
+    fonts2 = [];
+  }
+});
+
+// .svelte-kit/output/server/entries/pages/_page.server.ts.js
+var page_server_ts_exports = {};
+__export(page_server_ts_exports, {
+  actions: () => actions
+});
+var actions;
+var init_page_server_ts = __esm({
+  ".svelte-kit/output/server/entries/pages/_page.server.ts.js"() {
+    init_chunks();
+    actions = {
+      setTheme: async ({ url, cookies }) => {
+        const theme = url.searchParams.get("theme");
+        console.log(theme);
+        const redirectTo = url.searchParams.get("redirectTo");
+        if (theme) {
+          cookies.set("colortheme", theme, {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 365
+          });
+        }
+        throw redirect(303, redirectTo ?? "/");
+      }
+    };
   }
 });
 
@@ -2322,150 +2371,15 @@ var page_svelte_exports = {};
 __export(page_svelte_exports, {
   default: () => Page
 });
-function is_date(obj) {
-  return Object.prototype.toString.call(obj) === "[object Date]";
-}
-function tick_spring(ctx, last_value, current_value, target_value) {
-  if (typeof current_value === "number" || is_date(current_value)) {
-    const delta = target_value - current_value;
-    const velocity = (current_value - last_value) / (ctx.dt || 1 / 60);
-    const spring2 = ctx.opts.stiffness * delta;
-    const damper = ctx.opts.damping * velocity;
-    const acceleration = (spring2 - damper) * ctx.inv_mass;
-    const d2 = (velocity + acceleration) * ctx.dt;
-    if (Math.abs(d2) < ctx.opts.precision && Math.abs(delta) < ctx.opts.precision) {
-      return target_value;
-    } else {
-      ctx.settled = false;
-      return is_date(current_value) ? new Date(current_value.getTime() + d2) : current_value + d2;
-    }
-  } else if (Array.isArray(current_value)) {
-    return current_value.map((_, i2) => tick_spring(ctx, last_value[i2], current_value[i2], target_value[i2]));
-  } else if (typeof current_value === "object") {
-    const next_value = {};
-    for (const k in current_value) {
-      next_value[k] = tick_spring(ctx, last_value[k], current_value[k], target_value[k]);
-    }
-    return next_value;
-  } else {
-    throw new Error(`Cannot spring ${typeof current_value} values`);
-  }
-}
-function spring(value, opts = {}) {
-  const store = writable(value);
-  const { stiffness = 0.15, damping = 0.8, precision = 0.01 } = opts;
-  let last_time;
-  let task;
-  let current_token;
-  let last_value = value;
-  let target_value = value;
-  let inv_mass = 1;
-  let inv_mass_recovery_rate = 0;
-  let cancel_task = false;
-  function set(new_value, opts2 = {}) {
-    target_value = new_value;
-    const token = current_token = {};
-    if (value == null || opts2.hard || spring2.stiffness >= 1 && spring2.damping >= 1) {
-      cancel_task = true;
-      last_time = now();
-      last_value = new_value;
-      store.set(value = target_value);
-      return Promise.resolve();
-    } else if (opts2.soft) {
-      const rate = opts2.soft === true ? 0.5 : +opts2.soft;
-      inv_mass_recovery_rate = 1 / (rate * 60);
-      inv_mass = 0;
-    }
-    if (!task) {
-      last_time = now();
-      cancel_task = false;
-      task = loop((now2) => {
-        if (cancel_task) {
-          cancel_task = false;
-          task = null;
-          return false;
-        }
-        inv_mass = Math.min(inv_mass + inv_mass_recovery_rate, 1);
-        const ctx = {
-          inv_mass,
-          opts: spring2,
-          settled: true,
-          dt: (now2 - last_time) * 60 / 1e3
-        };
-        const next_value = tick_spring(ctx, last_value, value, target_value);
-        last_time = now2;
-        last_value = value;
-        store.set(value = next_value);
-        if (ctx.settled) {
-          task = null;
-        }
-        return !ctx.settled;
-      });
-    }
-    return new Promise((fulfil) => {
-      task.promise.then(() => {
-        if (token === current_token)
-          fulfil();
-      });
-    });
-  }
-  const spring2 = {
-    set,
-    update: (fn, opts2) => set(fn(target_value, value), opts2),
-    subscribe: store.subscribe,
-    stiffness,
-    damping,
-    precision
-  };
-  return spring2;
-}
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  const formattedTimestamp = date.toLocaleString("default", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-  return formattedTimestamp;
-}
-var css$4, Boop, css$3, Todos, css$2, Pomodoro, css$1, Journal, css2, Page;
+var css3, Todos, Page;
 var init_page_svelte = __esm({
   ".svelte-kit/output/server/entries/pages/_page.svelte.js"() {
     init_index3();
-    init_devalue();
-    init_index2();
     init_Login();
-    css$4 = {
-      code: "span.svelte-hqw5i7{will-change:transform}",
-      map: null
-    };
-    Boop = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let style;
-      let $springyRotation, $$unsubscribe_springyRotation;
-      let { rotation = 0 } = $$props;
-      let { timing = 150 } = $$props;
-      let springyRotation = spring(0, { stiffness: 0.1, damping: 0.15 });
-      $$unsubscribe_springyRotation = subscribe(springyRotation, (value) => $springyRotation = value);
-      if ($$props.rotation === void 0 && $$bindings.rotation && rotation !== void 0)
-        $$bindings.rotation(rotation);
-      if ($$props.timing === void 0 && $$bindings.timing && timing !== void 0)
-        $$bindings.timing(timing);
-      $$result.css.add(css$4);
-      {
-        springyRotation.set(0);
-      }
-      style = `
-		display: inline-block;
-		transform: rotate(${$springyRotation}deg)
-	`;
-      $$unsubscribe_springyRotation();
-      return `
-<span${add_attribute("style", style, 0)} class="${"svelte-hqw5i7"}">${slots.default ? slots.default({}) : ``}
-</span>`;
-    });
-    css$3 = {
-      code: '.todo.svelte-4e6nqx.svelte-4e6nqx.svelte-4e6nqx{display:flex;justify-content:space-between;padding:calc(var(--padding) / 4) 0}.todo-text.svelte-4e6nqx.svelte-4e6nqx.svelte-4e6nqx{padding:0 var(--padding);width:100%;position:relative}span.svelte-4e6nqx.svelte-4e6nqx.svelte-4e6nqx{word-break:keep-all}.todo-text.svelte-4e6nqx.svelte-4e6nqx.svelte-4e6nqx::before{content:"";position:absolute;left:calc(var(--padding) - 4px);top:50%;height:2px;background-color:rgba(var(--text-codes), 0.75);width:0;transition:width 0.25s;will-change:width}.todo-text.checked.svelte-4e6nqx.svelte-4e6nqx.svelte-4e6nqx::before{width:calc(100% - var(--padding) * 2)}.checkbox.svelte-4e6nqx.svelte-4e6nqx.svelte-4e6nqx{display:inline-block;position:relative;min-width:24px;height:24px;border:1px solid var(--bg3);border-radius:8px;cursor:pointer;background-color:var(--bg2)}.checkbox.svelte-4e6nqx.svelte-4e6nqx.svelte-4e6nqx:hover,.checkbox.svelte-4e6nqx.svelte-4e6nqx.svelte-4e6nqx:active{border:1px solid var(--accent)}.checkbox.svelte-4e6nqx input[type="checkbox"].svelte-4e6nqx.svelte-4e6nqx{position:absolute;opacity:0;cursor:pointer}.checkbox.svelte-4e6nqx .checkmark.svelte-4e6nqx.svelte-4e6nqx:after{content:"";position:absolute;display:none;left:9px;top:5px;width:5px;height:10px;border:solid var(--text);border-width:0 3px 3px 0;transform:rotate(45deg)}.checkbox.svelte-4e6nqx input[type="checkbox"].svelte-4e6nqx:checked~.checkmark.svelte-4e6nqx:after{display:block}form.svelte-4e6nqx.svelte-4e6nqx.svelte-4e6nqx{padding:var(--padding) calc(var(--padding) * 2);position:relative;bottom:0}form.svelte-4e6nqx input.svelte-4e6nqx.svelte-4e6nqx{width:100%}',
+    init_pocketbase();
+    init_index2();
+    css3 = {
+      code: '.todo.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h{display:flex;position:relative;padding:calc(var(--padding) / 4) 0}.todos.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h{width:clamp(160px, 100%, 320px);padding:var(--padding)}.todo-text.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h{padding:0 var(--padding);position:relative}.delete-button.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h{position:absolute;right:0}.pomodoro-button.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h{position:absolute;right:calc(var(--padding) * 1.7)}.todo-text.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h::before{content:"";position:absolute;left:calc(var(--padding) - 1ch / 2);top:50%;height:2px;background-color:rgba(var(--text-codes), 0.75);width:0;transition:width 0.25s;will-change:width}.todo-text.checked.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h::before{width:calc(100% - var(--padding) - 1ch / 2)}.checkbox.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h{position:relative;min-width:24px;border:1px solid var(--bg3);border-radius:8px;cursor:pointer;background-color:var(--bg2)}.checkbox.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h:hover,.checkbox.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h:active{border:1px solid var(--accent)}.checkbox.svelte-1apu78h input[type="checkbox"].svelte-1apu78h.svelte-1apu78h{position:absolute;opacity:0}.checkbox.svelte-1apu78h .checkmark.svelte-1apu78h.svelte-1apu78h:after{content:"";position:absolute;opacity:0;left:9px;top:5px;width:5px;height:10px;border:solid var(--text);border-width:0 3px 3px 0;transform:rotate(45deg);transition:opacity 150ms}.checkbox.svelte-1apu78h input[type="checkbox"].svelte-1apu78h:checked~.checkmark.svelte-1apu78h:after{opacity:1}form.svelte-1apu78h.svelte-1apu78h.svelte-1apu78h{padding-top:var(--padding)}form.svelte-1apu78h input.svelte-1apu78h.svelte-1apu78h{width:100%}',
       map: null
     };
     Todos = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -2480,103 +2394,31 @@ var init_page_svelte = __esm({
       let { className } = $$props;
       if ($$props.className === void 0 && $$bindings.className && className !== void 0)
         $$bindings.className(className);
-      $$result.css.add(css$3);
+      $$result.css.add(css3);
       $$unsubscribe_currentUser();
       $$unsubscribe_todos();
-      return `<div class="${escape(null_to_empty(className), true) + " svelte-4e6nqx"}"><div>${each($todos, (todo) => {
-        return `<div class="${"todo svelte-4e6nqx"}"><label class="${"checkbox svelte-4e6nqx"}"><input type="${"checkbox"}" ${todo.checked ? "checked" : ""} class="${"svelte-4e6nqx"}">
-					<span class="${"checkmark svelte-4e6nqx"}"></span></label>
-				<span class="${["todo-text svelte-4e6nqx", todo.checked ? "checked" : ""].join(" ").trim()}">${escape(todo.text)}</span>
-				<button class="${"icon-button"}"><svg xmlns="${"http://www.w3.org/2000/svg"}" width="${"1em"}" height="${"1em"}" viewBox="${"0 0 15 15"}"><path fill="${"currentColor"}" d="${"M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27Z"}"></path></svg></button>
+      return `<div class="${escape(null_to_empty(className), true) + " svelte-1apu78h"}"><div>${each($todos, (todo) => {
+        return `<div class="${"todo svelte-1apu78h"}"><label class="${"checkbox svelte-1apu78h"}"><input type="${"checkbox"}" ${todo.checked ? "checked" : ""} class="${"svelte-1apu78h"}">
+					<span class="${"checkmark svelte-1apu78h"}"></span></label>
+				<span class="${["todo-text svelte-1apu78h", todo.checked ? "checked" : ""].join(" ").trim()}">${escape(todo.text)}</span>
+
+				<button class="${"icon-button pomodoro-button svelte-1apu78h"}"><svg xmlns="${"http://www.w3.org/2000/svg"}" width="${"1em"}" height="${"1em"}" viewBox="${"0 0 24 24"}"><path fill="${"currentColor"}" d="${"M12 20c4.4 0 8-3.6 8-8s-3.6-8-8-8s-8 3.6-8 8s3.6 8 8 8m0-18c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m5 9.5V13h-6V7h1.5v4.5H17Z"}"></path></svg></button>
+
+				<button class="${"icon-button delete-button svelte-1apu78h"}"><svg xmlns="${"http://www.w3.org/2000/svg"}" width="${"1em"}" height="${"1em"}" viewBox="${"0 0 15 15"}"><path fill="${"currentColor"}" d="${"M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27Z"}"></path></svg></button>
 			</div>`;
       })}</div>
 
-	<form class="${"svelte-4e6nqx"}"><input autocomplete="${"off"}" placeholder="${"add task"}" type="${"text"}" class="${"svelte-4e6nqx"}"${add_attribute("value", todoText, 0)}></form>
-</div>`;
+	<form class="${"svelte-1apu78h"}"><input autocomplete="${"off"}" placeholder="${"add task"}" type="${"text"}" class="${"svelte-1apu78h"}"${add_attribute("value", todoText, 0)}></form></div>
+
+${``}`;
     });
-    css$2 = {
-      code: ".timer-container.svelte-193ckcd{display:flex;flex-direction:column;align-items:center;justify-content:center}.timer-label.svelte-193ckcd{font-size:1.2em;font-weight:bold}.timer-time.svelte-193ckcd{font-size:2em;font-weight:bold}.input-container.svelte-193ckcd{display:flex;align-items:center;margin:10px 0}label.svelte-193ckcd{margin-right:10px}",
-      map: null
-    };
-    Pomodoro = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let { className } = $$props;
-      let timerMinutes = 25;
-      let breakMinutes = 5;
-      let minutes = timerMinutes;
-      let seconds = 0;
-      if ($$props.className === void 0 && $$bindings.className && className !== void 0)
-        $$bindings.className(className);
-      $$result.css.add(css$2);
-      return `<div class="${escape(null_to_empty(className), true) + " svelte-193ckcd"}"><div class="${"timer-container svelte-193ckcd"}"><p class="${"timer-label svelte-193ckcd"}">${escape("Work")}</p>
-    <p class="${"timer-time svelte-193ckcd"}">${escape(minutes)}:${escape(`0${seconds}`)}</p></div>
-  ${`<div class="${"input-container svelte-193ckcd"}"><label for="${"timer-minutes"}" class="${"svelte-193ckcd"}">Timer Minutes:</label>
-      <input type="${"number"}" id="${"timer-minutes"}"${add_attribute("value", timerMinutes, 0)}></div>
-
-<div class="${"input-container svelte-193ckcd"}"><label for="${"break-minutes"}" class="${"svelte-193ckcd"}">Break Minutes:</label>
-  <input type="${"number"}" id="${"break-minutes"}"${add_attribute("value", breakMinutes, 0)}></div>
-
-<button>Start</button>
-<button>Stop</button>`}
-</div>`;
-    });
-    css$1 = {
-      code: ".entry.svelte-3tvu0z{padding:calc(var(--padding) / 2)}.entry-date.svelte-3tvu0z{opacity:80%}",
-      map: null
-    };
-    Journal = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$unsubscribe_currentUser;
-      let $journals, $$unsubscribe_journals;
-      $$unsubscribe_currentUser = subscribe(currentUser, (value) => value);
-      let journalText;
-      let journals = writable([]);
-      $$unsubscribe_journals = subscribe(journals, (value) => $journals = value);
-      onDestroy(() => {
-      });
-      let { className } = $$props;
-      if ($$props.className === void 0 && $$bindings.className && className !== void 0)
-        $$bindings.className(className);
-      $$result.css.add(css$1);
-      $$unsubscribe_currentUser();
-      $$unsubscribe_journals();
-      return `<div class="${escape(null_to_empty(className), true) + " svelte-3tvu0z"}"><div>${each($journals, (journal) => {
-        return `<div class="${"entry svelte-3tvu0z"}"><span class="${"entry-date svelte-3tvu0z"}">${escape(formatDate(journal.created))}: </span>
-				<span class="${"entry-text"}">${escape(journal.text)}</span>
-			</div>`;
-      })}</div>
-
-
-	<form><input placeholder="${"add journal"}" type="${"text"}"${add_attribute("value", journalText, 0)}></form>
-</div>`;
-    });
-    css2 = {
-      code: "header.svelte-9s38wx{display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:var(--padding);border-bottom:1px solid var(--bg3)}div.svelte-9s38wx{display:flex}form.svelte-9s38wx{display:flex;align-items:center}button.svelte-9s38wx{font-size:2rem;height:2rem;padding:0 var(--padding);background-color:transparent}main.svelte-9s38wx{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 2fr;gap:var(--padding)}",
-      map: null
-    };
     Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       let $currentUser, $$unsubscribe_currentUser;
       $$unsubscribe_currentUser = subscribe(currentUser, (value) => $currentUser = value);
-      $$result.css.add(css2);
       $$unsubscribe_currentUser();
-      return `<header class="${"svelte-9s38wx"}"><h1>Productivity</h1>
+      return `
 
-	<div class="${"svelte-9s38wx"}"><form method="${"POST"}" class="${"svelte-9s38wx"}">${validate_component(Boop, "Boop").$$render($$result, { rotation: 15, timing: 150 }, {}, {
-        default: () => {
-          return `<button aria-label="${"enable-light-mode"}" class="${"icon-button light-button svelte-9s38wx"}" formaction="${"/?/setTheme&theme=light"}"><svg xmlns="${"http://www.w3.org/2000/svg"}" width="${"1em"}" height="${"1em"}" viewBox="${"0 0 24 24"}"><path fill="${"currentColor"}" d="${"M12 15q1.25 0 2.125-.875T15 12q0-1.25-.875-2.125T12 9q-1.25 0-2.125.875T9 12q0 1.25.875 2.125T12 15Zm0 2q-2.075 0-3.537-1.463Q7 14.075 7 12t1.463-3.538Q9.925 7 12 7t3.538 1.462Q17 9.925 17 12q0 2.075-1.462 3.537Q14.075 17 12 17ZM2 13q-.425 0-.712-.288Q1 12.425 1 12t.288-.713Q1.575 11 2 11h2q.425 0 .713.287Q5 11.575 5 12t-.287.712Q4.425 13 4 13Zm18 0q-.425 0-.712-.288Q19 12.425 19 12t.288-.713Q19.575 11 20 11h2q.425 0 .712.287q.288.288.288.713t-.288.712Q22.425 13 22 13Zm-8-8q-.425 0-.712-.288Q11 4.425 11 4V2q0-.425.288-.713Q11.575 1 12 1t.713.287Q13 1.575 13 2v2q0 .425-.287.712Q12.425 5 12 5Zm0 18q-.425 0-.712-.288Q11 22.425 11 22v-2q0-.425.288-.712Q11.575 19 12 19t.713.288Q13 19.575 13 20v2q0 .425-.287.712Q12.425 23 12 23ZM5.65 7.05L4.575 6q-.3-.275-.288-.7q.013-.425.288-.725q.3-.3.725-.3t.7.3L7.05 5.65q.275.3.275.7q0 .4-.275.7q-.275.3-.687.287q-.413-.012-.713-.287ZM18 19.425l-1.05-1.075q-.275-.3-.275-.712q0-.413.275-.688q.275-.3.688-.287q.412.012.712.287L19.425 18q.3.275.288.7q-.013.425-.288.725q-.3.3-.725.3t-.7-.3ZM16.95 7.05q-.3-.275-.287-.688q.012-.412.287-.712L18 4.575q.275-.3.7-.288q.425.013.725.288q.3.3.3.725t-.3.7L18.35 7.05q-.3.275-.7.275q-.4 0-.7-.275ZM4.575 19.425q-.3-.3-.3-.725t.3-.7l1.075-1.05q.3-.275.713-.275q.412 0 .687.275q.3.275.288.688q-.013.412-.288.712L6 19.425q-.275.3-.7.287q-.425-.012-.725-.287ZM12 12Z"}"></path></svg></button>`;
-        }
-      })}
-
-			${validate_component(Boop, "Boop").$$render($$result, { rotation: 15, timing: 150 }, {}, {
-        default: () => {
-          return `<button aria-label="${"enable-dark-mode"}" class="${"icon-button dark-button svelte-9s38wx"}" formaction="${"/?/setTheme&theme=dark"}"><svg xmlns="${"http://www.w3.org/2000/svg"}" width="${"1em"}" height="${"1em"}" viewBox="${"0 0 24 24"}"><path fill="${"currentColor"}" d="${"M12 21q-3.775 0-6.388-2.613Q3 15.775 3 12q0-3.45 2.25-5.988Q7.5 3.475 11 3.05q.625-.075.975.45t-.025 1.1q-.425.65-.638 1.375Q11.1 6.7 11.1 7.5q0 2.25 1.575 3.825Q14.25 12.9 16.5 12.9q.775 0 1.538-.225q.762-.225 1.362-.625q.525-.35 1.075-.038q.55.313.475.988q-.35 3.45-2.937 5.725Q15.425 21 12 21Zm0-2q2.2 0 3.95-1.212q1.75-1.213 2.55-3.163q-.5.125-1 .2q-.5.075-1 .075q-3.075 0-5.238-2.162Q9.1 10.575 9.1 7.5q0-.5.075-1t.2-1q-1.95.8-3.162 2.55Q5 9.8 5 12q0 2.9 2.05 4.95Q9.1 19 12 19Zm-.25-6.75Z"}"></path></svg></button>`;
-        }
-      })}</form>
-
-		${$currentUser ? `${validate_component(Login, "Login").$$render($$result, {}, {}, {})}` : ``}</div></header>
-
-<main class="${"svelte-9s38wx"}">${$currentUser ? `${validate_component(Todos, "Todos").$$render($$result, { className: "todos" }, {}, {})}
-		${validate_component(Journal, "Journal").$$render($$result, { className: "journal" }, {}, {})}
-		${validate_component(Pomodoro, "Pomodoro").$$render($$result, { className: "pomodoro" }, {}, {})}` : `${validate_component(Login, "Login").$$render($$result, {}, {}, {})}`}
-</main>`;
+${$currentUser ? `${validate_component(Todos, "Todos").$$render($$result, { className: "todos" }, {}, {})}` : `${validate_component(Login, "Login").$$render($$result, {}, {}, {})}`}`;
     });
   }
 });
@@ -2598,35 +2440,64 @@ var init__3 = __esm({
     init_page_server_ts();
     index3 = 2;
     component3 = async () => (await Promise.resolve().then(() => (init_page_svelte(), page_svelte_exports))).default;
-    file3 = "_app/immutable/components/pages/_page.svelte-e7f2bd49.js";
-    imports3 = ["_app/immutable/components/pages/_page.svelte-e7f2bd49.js", "_app/immutable/chunks/index-5bbd1ec6.js", "_app/immutable/chunks/parse-b67c4dc9.js", "_app/immutable/chunks/singletons-e9d9c1e5.js", "_app/immutable/chunks/index-7a540288.js", "_app/immutable/chunks/Login-ed07c1b8.js"];
-    stylesheets3 = ["_app/immutable/assets/_page-68bc9e29.css", "_app/immutable/assets/Login-55278ccf.css"];
+    file3 = "_app/immutable/components/pages/_page.svelte-4883b535.js";
+    imports3 = ["_app/immutable/components/pages/_page.svelte-4883b535.js", "_app/immutable/chunks/index-cdc99104.js", "_app/immutable/chunks/Login-f46a1d5e.js", "_app/immutable/chunks/pocketbase-e2ca09db.js"];
+    stylesheets3 = ["_app/immutable/assets/_page-bb226f49.css", "_app/immutable/assets/Login-a6eabac3.css"];
     fonts3 = [];
   }
 });
 
-// .svelte-kit/output/server/entries/pages/login/_page.svelte.js
+// .svelte-kit/output/server/entries/pages/journal/_page.svelte.js
 var page_svelte_exports2 = {};
 __export(page_svelte_exports2, {
   default: () => Page2
 });
-var css3, Page2;
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const formattedTimestamp = date.toLocaleString("default", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+  return formattedTimestamp;
+}
+var css4, Journal, Page2;
 var init_page_svelte2 = __esm({
-  ".svelte-kit/output/server/entries/pages/login/_page.svelte.js"() {
+  ".svelte-kit/output/server/entries/pages/journal/_page.svelte.js"() {
     init_index3();
-    init_Login();
-    css3 = {
-      code: "nav.svelte-1stqhwj{display:flex;flex-direction:row;justify-content:space-between;padding:var(--padding)}",
+    init_pocketbase();
+    init_index2();
+    css4 = {
+      code: ".entry.svelte-1co54gj{padding:calc(var(--padding) / 2)}.entry-date.svelte-1co54gj{opacity:80%}",
       map: null
     };
+    Journal = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let $$unsubscribe_currentUser;
+      let $journals, $$unsubscribe_journals;
+      $$unsubscribe_currentUser = subscribe(currentUser, (value) => value);
+      let journalText;
+      let journals = writable([]);
+      $$unsubscribe_journals = subscribe(journals, (value) => $journals = value);
+      onDestroy(() => {
+      });
+      let { className } = $$props;
+      if ($$props.className === void 0 && $$bindings.className && className !== void 0)
+        $$bindings.className(className);
+      $$result.css.add(css4);
+      $$unsubscribe_currentUser();
+      $$unsubscribe_journals();
+      return `<div class="${escape(null_to_empty(className), true) + " svelte-1co54gj"}"><div>${each($journals, (journal) => {
+        return `<div class="${"entry svelte-1co54gj"}"><span class="${"entry-date svelte-1co54gj"}">${escape(formatDate(journal.created))}: </span>
+				<span class="${"entry-text"}">${escape(journal.text)}</span>
+			</div>`;
+      })}</div>
+
+	<form><input placeholder="${"add journal"}" type="${"text"}"${add_attribute("value", journalText, 0)}></form>
+</div>`;
+    });
     Page2 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      $$result.css.add(css3);
-      return `${$$result.head += `<!-- HEAD_svelte-10ckgw5_START -->${$$result.title = `<title>Productivity</title>`, ""}<meta name="${"description"}" content="${"Todo and notes tailored to my needs"}"><!-- HEAD_svelte-10ckgw5_END -->`, ""}
-
-<nav class="${"svelte-1stqhwj"}"><h1>Todo List</h1></nav>
-
-<main>${validate_component(Login, "Login").$$render($$result, {}, {}, {})}
-</main>`;
+      return `${validate_component(Journal, "Journal").$$render($$result, { className: "journal" }, {}, {})}`;
     });
   }
 });
@@ -2646,9 +2517,9 @@ var init__4 = __esm({
   ".svelte-kit/output/server/nodes/3.js"() {
     index4 = 3;
     component4 = async () => (await Promise.resolve().then(() => (init_page_svelte2(), page_svelte_exports2))).default;
-    file4 = "_app/immutable/components/pages/login/_page.svelte-945d55d9.js";
-    imports4 = ["_app/immutable/components/pages/login/_page.svelte-945d55d9.js", "_app/immutable/chunks/index-5bbd1ec6.js", "_app/immutable/chunks/Login-ed07c1b8.js", "_app/immutable/chunks/index-7a540288.js"];
-    stylesheets4 = ["_app/immutable/assets/_page-200b00ce.css", "_app/immutable/assets/Login-55278ccf.css"];
+    file4 = "_app/immutable/components/pages/journal/_page.svelte-feef3444.js";
+    imports4 = ["_app/immutable/components/pages/journal/_page.svelte-feef3444.js", "_app/immutable/chunks/index-cdc99104.js", "_app/immutable/chunks/pocketbase-e2ca09db.js"];
+    stylesheets4 = ["_app/immutable/assets/_page-df2635a2.css"];
     fonts4 = [];
   }
 });
@@ -2748,7 +2619,7 @@ ${``}`;
   } while (!$$settled);
   return $$rendered;
 });
-set_version("1675972860333");
+set_version("1676339756205");
 var options = {
   csp: { "mode": "auto", "directives": { "upgrade-insecure-requests": false, "block-all-mixed-content": false }, "reportOnly": { "upgrade-insecure-requests": false, "block-all-mixed-content": false } },
   csrf_check_origin: true,
@@ -2759,7 +2630,7 @@ var options = {
   root: Root,
   service_worker: false,
   templates: {
-    app: ({ head, body, assets: assets2, nonce, env }) => '<!DOCTYPE html>\n<html lang="en" data-theme="">\n	<head>\n		<meta charset="utf-8" />\n		<meta name="viewport" content="width=device-width, initial-scale=1" />\n		<meta name="apple-mobile-web-app-capable" content="yes">\n		<meta name="apple-mobile-web-app-status-bar-style" content="default">\n		<link rel="icon" type="image/ico" href="' + assets2 + '/favicon.ico" />\n		' + head + '\n	</head>\n	<body data-sveltekit-preload-data="hover">\n		<div style="display: contents">' + body + "</div>\n	</body>\n</html>\n",
+    app: ({ head, body, assets: assets2, nonce, env }) => '<!DOCTYPE html>\n<html lang="en" data-theme="">\n	<head>\n		<meta charset="utf-8" />\n		<meta name="viewport" content="width=device-width, initial-scale=1" />\n		<meta name="apple-mobile-web-app-capable" content="yes" />\n		<meta name="apple-mobile-web-app-status-bar-style" content="default" />\n		<link rel="icon" type="image/ico" href="' + assets2 + '/favicon.ico" />\n		' + head + '\n	</head>\n	<body data-sveltekit-preload-data="hover">\n		<div style="display: contents">' + body + "</div>\n	</body>\n</html>\n",
     error: ({ status, message }) => '<!DOCTYPE html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8" />\n		<title>' + message + `</title>
 
 		<style>
@@ -5274,7 +5145,7 @@ var manifest = {
   assets: /* @__PURE__ */ new Set(["favicon.ico"]),
   mimeTypes: { ".ico": "image/vnd.microsoft.icon" },
   _: {
-    entry: { "file": "_app/immutable/start-b13924a6.js", "imports": ["_app/immutable/start-b13924a6.js", "_app/immutable/chunks/index-5bbd1ec6.js", "_app/immutable/chunks/singletons-e9d9c1e5.js", "_app/immutable/chunks/index-7a540288.js", "_app/immutable/chunks/parse-b67c4dc9.js"], "stylesheets": [], "fonts": [] },
+    entry: { "file": "_app/immutable/start-e5a025ad.js", "imports": ["_app/immutable/start-e5a025ad.js", "_app/immutable/chunks/index-cdc99104.js", "_app/immutable/chunks/singletons-83248bbb.js", "_app/immutable/chunks/parse-a9b5aeea.js"], "stylesheets": [], "fonts": [] },
     nodes: [
       () => Promise.resolve().then(() => (init__(), __exports)),
       () => Promise.resolve().then(() => (init__2(), __exports2)),
@@ -5290,8 +5161,8 @@ var manifest = {
         endpoint: null
       },
       {
-        id: "/login",
-        pattern: /^\/login\/?$/,
+        id: "/journal",
+        pattern: /^\/journal\/?$/,
         params: [],
         page: { layouts: [0], errors: [1], leaf: 3 },
         endpoint: null

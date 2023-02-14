@@ -6,7 +6,7 @@
 	let errorMessage = "";
 
 	async function login() {
-		return new Promise(async (resolve, reject) => {
+		return new Promise(async (reject) => {
 			try {
 				await pb.collection("users").authWithPassword(username, password);
 				username = "";
@@ -19,7 +19,7 @@
 	}
 
 	async function signUp() {
-		return new Promise(async (resolve, reject) => {
+		return new Promise(async (reject) => {
 			try {
 				const passwordLength = 8;
 				if (password.length < passwordLength) {
@@ -46,33 +46,38 @@
 	}
 </script>
 
-<!-- conditional rendering of logged in message or login -->
 {#if $currentUser}
 	<button on:click={signOut}> Sign Out </button>
 {:else}
-	<form on:submit|preventDefault>
-		<input
-			id="username"
-			placeholder="Username"
-			type="text"
-			bind:value={username}
-		/>
-		<input
-			id="password"
-			placeholder="Password"
-			type="password"
-			bind:value={password}
-		/>
-		<button id="login" on:click={login}>Login</button>
-		<button id="signup" on:click={signUp}>Sign Up</button>
-	</form>
+	<div class="login">
+		<form on:submit|preventDefault>
+			<input
+				id="username"
+				placeholder="Username"
+				type="text"
+				bind:value={username}
+			/>
+			<input
+				id="password"
+				placeholder="Password"
+				type="password"
+				bind:value={password}
+			/>
+			<button id="login" on:click={login}>Login</button>
+			<button id="signup" on:click={signUp}>Sign Up</button>
+		</form>
 
-	{#if errorMessage}
-		<span class="error">{errorMessage}</span>
-	{/if}
+		{#if errorMessage}
+			<span class="error">{errorMessage}</span>
+		{/if}
+	</div>
 {/if}
 
 <style>
+	div {
+		height: clamp(160px, 100%, 480px);
+	}
+
 	form {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);

@@ -61,13 +61,13 @@
 
 	function formatDate(dateString: string) {
 		const date = new Date(dateString);
-		const formattedTimestamp = date.toLocaleString("default", { 
-		  month: "short", 
-		  day: "numeric", 
-		  hour: "2-digit", 
-		  minute: "2-digit" 
+		const formattedTimestamp = date.toLocaleString("default", {
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
 		});
-		return formattedTimestamp
+		return formattedTimestamp;
 	}
 
 	export let className: string;
@@ -83,7 +83,6 @@
 		{/each}
 	</div>
 
-
 	<form on:submit|preventDefault={addJournal}>
 		<input
 			placeholder="add journal"
@@ -95,11 +94,11 @@
 </div>
 
 <style>
-.entry {
-	padding: calc(var(--padding) / 2);
-}
+	.entry {
+		padding: calc(var(--padding) / 2);
+	}
 
-.entry-date {
-	opacity: 80%;
-}
+	.entry-date {
+		opacity: 80%;
+	}
 </style>

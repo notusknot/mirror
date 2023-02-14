@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from "svelte";
 	import { currentUser, pb } from "$lib/pocketbase";
 	import { writable } from "svelte/store";
+	import Pomodoro from "$lib/Pomodoro.svelte";
 
 	type Todo = {
 		id: string;
@@ -72,6 +73,12 @@
 	}
 
 	export let className: string;
+
+	let showPomodoro = false;
+	
+	function togglePomodoro() {
+		showPomodoro = !showPomodoro;
+	}
 </script>
 
 <div class={className}>
@@ -87,7 +94,24 @@
 					<span class="checkmark" />
 				</label>
 				<span class="todo-text" class:checked={todo.checked}>{todo.text}</span>
-				<button class="icon-button" on:click={() => deleteTodo(todo)}>
+
+				<button class="icon-button pomodoro-button" on:click={() => togglePomodoro()}>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="1em"
+						height="1em"
+						viewBox="0 0 24 24"
+						><path
+							fill="currentColor"
+							d="M12 20c4.4 0 8-3.6 8-8s-3.6-8-8-8s-8 3.6-8 8s3.6 8 8 8m0-18c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m5 9.5V13h-6V7h1.5v4.5H17Z"
+						/></svg
+					>
+				</button>
+
+				<button
+					class="icon-button delete-button"
+					on:click={() => deleteTodo(todo)}
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="1em"
@@ -114,86 +138,95 @@
 	</form>
 </div>
 
+{#if showPomodoro}
+<Pomodoro className="pomodoro"/>
+{/if}
+
 <style>
+	.todo {
+		display: flex;
+		position: relative;
+		padding: calc(var(--padding) / 4) 0;
+	}
 
-.todo {
-  display: flex;
-  justify-content: space-between;
-  padding: calc(var(--padding) / 4) 0;
-}
+	.todos {
+		width: clamp(160px, 100%, 320px);
+		padding: var(--padding);
+	}
 
-.todo-text {
-  padding: 0 var(--padding);
-  width: 100%;
-  position: relative;
-}
+	.todo-text {
+		padding: 0 var(--padding);
+		position: relative;
+	}
 
-span {
-	word-break: keep-all;
-}
+	.delete-button {
+		position: absolute;
+		right: 0;
+	}
 
-.todo-text::before {
-  content: "";
-  position: absolute;
-  left: calc(var(--padding) - 4px);
-  top: 50%;
-  height: 2px;
-  background-color: rgba(var(--text-codes), 0.75);
-  width: 0;
-  transition: width 0.25s;
-  will-change: width;
-}
+	.pomodoro-button {
+		position: absolute;
+		right: calc(var(--padding) * 1.7);
+	}
 
-.todo-text.checked::before {
-  width: calc(100% - var(--padding) * 2);
-}
+	.todo-text::before {
+		content: "";
+		position: absolute;
+		left: calc(var(--padding) - 1ch / 2);
+		top: 50%;
+		height: 2px;
+		background-color: rgba(var(--text-codes), 0.75);
+		width: 0;
+		transition: width 0.25s;
+		will-change: width;
+	}
 
-.checkbox {
-  display: inline-block;
-  position: relative;
-  min-width: 24px;
-  height: 24px;
-  border: 1px solid var(--bg3);
-  border-radius: 8px;
-  cursor: pointer;
-  background-color: var(--bg2);
-}
+	.todo-text.checked::before {
+		width: calc(100% - var(--padding) - 1ch / 2);
+	}
 
-.checkbox:hover,
-.checkbox:active {
-  border: 1px solid var(--accent);
-}
+	.checkbox {
+		position: relative;
+		min-width: 24px;
+		border: 1px solid var(--bg3);
+		border-radius: 8px;
+		cursor: pointer;
+		background-color: var(--bg2);
+	}
 
-.checkbox input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-}
+	.checkbox:hover,
+	.checkbox:active {
+		border: 1px solid var(--accent);
+	}
 
-.checkbox .checkmark:after {
-  content: "";
-  position: absolute;
-  display: none;
-  left: 9px;
-  top: 5px;
-  width: 5px;
-  height: 10px;
-  border: solid var(--text);
-  border-width: 0 3px 3px 0;
-  transform: rotate(45deg);
-}
+	.checkbox input[type="checkbox"] {
+		position: absolute;
+		opacity: 0;
+	}
 
-.checkbox input[type="checkbox"]:checked ~ .checkmark:after {
-  display: block;
-}
+	.checkbox .checkmark:after {
+		content: "";
+		position: absolute;
+		opacity: 0;
+		left: 9px;
+		top: 5px;
+		width: 5px;
+		height: 10px;
+		border: solid var(--text);
+		border-width: 0 3px 3px 0;
+		transform: rotate(45deg);
+		transition: opacity 150ms;
+	}
 
-form {
-  padding: var(--padding) calc(var(--padding) * 2);
-	position: relative;
-	bottom: 0;
-}
+	.checkbox input[type="checkbox"]:checked ~ .checkmark:after {
+		opacity: 1;
+	}
 
-form input {
-  width: 100%;
-}
+	form {
+		padding-top: var(--padding);
+	}
+
+	form input {
+		width: 100%;
+	}
 </style>
