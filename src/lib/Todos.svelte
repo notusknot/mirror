@@ -188,6 +188,7 @@
 	.checkbox {
 		position: relative;
 		min-width: 24px;
+		max-height: 24px;
 		border: 1px solid var(--bg3);
 		border-radius: 8px;
 		cursor: pointer;

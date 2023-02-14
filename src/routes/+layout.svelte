@@ -3,6 +3,7 @@
 	import { enhance, type SubmitFunction } from "$app/forms";
 	import Boop from "$lib/Boop.svelte";
 	import Login from "$lib/Login.svelte";
+	import Icon from "../../static/icon.svg?raw"
 
 	import "./styles.css";
 
@@ -21,7 +22,12 @@
 </svelte:head>
 
 <header>
-	<button><a href="/journal">Journal</a></button>
+	<div>
+		<button><a href="/journal">Journal</a></button>
+		<Boop>
+			<button style="padding-top: 6px;" class="icon-button"><a href="/">{@html Icon}</a></button>
+		</Boop>
+	</div>
 
 	<div>
 		<form method="POST" use:enhance={submitUpdateTheme}>
@@ -103,6 +109,7 @@
 	a {
 		color: var(--text);
 		text-decoration: none;
+		height: 32px;
 	}
 
 	.icon-button {
