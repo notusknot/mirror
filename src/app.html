@@ -13,16 +13,17 @@
 			content="#242424"
 		/>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 		<link
 			rel="apple-touch-icon"
 			sizes="180x180"
-			href="%sveltekit.assets%/apple-touch-icon.png"
+			href="%sveltekit.assetes%/apple-touch-icon.png"
 		/>
 		<link rel="icon" type="image/svg+xml" href="%sveltekit.assets%/icon.svg" />
 		%sveltekit.head%
 	</head>
-	<body ontouchstart="" data-sveltekit-preload-data="hover">
+	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
