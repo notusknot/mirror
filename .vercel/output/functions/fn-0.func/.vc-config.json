@@ -1,5 +1,0 @@
-{
-	"runtime": "nodejs18.x",
-	"handler": "home/notus/stuff/programming/pb-productivity/.svelte-kit/vercel-tmp/index.js",
-	"launcherType": "Nodejs"
-}
