@@ -53,6 +53,7 @@
 	.boop {
 		display: inline-block;
 		will-change: transform;
+		max-height: 32px;
 	}
 	.boop.active {
 		animation-duration: 1s;
