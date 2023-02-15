@@ -8,9 +8,8 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter:
-			adapter(),
-			//{ runtime: "edge", }
+		adapter: adapter(),
+		//{ runtime: "edge", }
 	},
 };
 

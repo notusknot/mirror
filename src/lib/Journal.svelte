@@ -99,12 +99,13 @@
 
 	.content {
 		margin: 0 auto;
-		width: clamp(160px, 100%, 720px)
+		width: clamp(160px, 100%, 720px);
 	}
 
 	form {
 		position: fixed;
 		bottom: var(--padding);
+		left: var(--padding);
 		width: calc(100% - var(--padding) * 2);
 	}
 

@@ -52,10 +52,11 @@
 
 <header>
 	<div>
-		<button><a href="/journal">Journal</a></button>
+		{#if $currentUser}
+			<button><a href="/journal">Journal</a></button>
+		{/if}
 		<Boop>
-			<button style="padding-top: 6px;" class="icon-button"
-				><a href="/">{@html Icon}</a></button
+			<button class="icon-button home-icon"><a href="/">{@html Icon}</a></button
 			>
 		</Boop>
 	</div>
@@ -133,11 +134,8 @@
 		border-bottom: 1px solid var(--bg3);
 	}
 
+	header form,
 	header div {
-		display: flex;
-	}
-
-	header form {
 		display: flex;
 		align-items: center;
 	}
@@ -153,5 +151,9 @@
 		height: 2rem;
 		padding: 0 var(--padding);
 		background-color: transparent;
+	}
+
+	.home-icon {
+		margin-top: 6px;
 	}
 </style>
