@@ -15,7 +15,7 @@
 html,
 body {
 	height: 100%;
-	overflow-x: hidden;
+	overflow: hidden;
 	-webkit-font-smoothing: antialiased;
 	color: var(--text);
 	background-color: var(--bg);
@@ -89,6 +89,9 @@ textarea {
 button:focus,
 button:focus-visible,
 button:hover,
+textarea:focus,
+textarea:focus-visible,
+textarea:hover,
 input:focus,
 input:focus-visible,
 input:hover {
@@ -101,4 +104,19 @@ input:hover {
 	font-size: 1.2rem;
 	border: none;
 	background-color: var(--bg);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--bg2);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--bg3);
+  border-radius: 5px;
 }

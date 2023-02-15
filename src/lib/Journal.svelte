@@ -73,8 +73,8 @@
 	export let className: string;
 </script>
 
-<div class={className}>
-	<div>
+<div class="journals">
+	<div class="content">
 		{#each $journals as journal (journal.id)}
 			<div class="entry">
 				<span class="entry-date">{formatDate(journal.created)}: </span>
@@ -93,6 +93,15 @@
 </div>
 
 <style>
+	.journals {
+		overflow-y: scroll;
+	}
+
+	.content {
+		margin: 0 auto;
+		width: clamp(160px, 100%, 720px)
+	}
+
 	form {
 		position: fixed;
 		bottom: var(--padding);
