@@ -1,3 +1,5 @@
+<svelte:options immutable />
+
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { currentUser, pb } from "$lib/pocketbase";
@@ -75,7 +77,7 @@
 	export let className: string;
 
 	let showPomodoro = false;
-	
+
 	function togglePomodoro() {
 		showPomodoro = !showPomodoro;
 	}
@@ -95,7 +97,10 @@
 				</label>
 				<span class="todo-text" class:checked={todo.checked}>{todo.text}</span>
 
-				<button class="icon-button pomodoro-button" on:click={() => togglePomodoro()}>
+				<button
+					class="icon-button pomodoro-button"
+					on:click={() => togglePomodoro()}
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="1em"
@@ -139,7 +144,7 @@
 </div>
 
 {#if showPomodoro}
-<Pomodoro className="pomodoro"/>
+	<Pomodoro className="pomodoro" />
 {/if}
 
 <style>
@@ -150,7 +155,7 @@
 	}
 
 	.todos {
-		width: clamp(160px, 100%, 320px);
+		width: clamp(160px, 100%, 620px);
 		padding: var(--padding);
 	}
 
@@ -225,9 +230,11 @@
 
 	form {
 		padding-top: var(--padding);
+		display: flex;
+		justify-content: center;
 	}
 
 	form input {
-		width: 100%;
+		width: clamp(160px, 100%, 320px);
 	}
 </style>

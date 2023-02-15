@@ -1,35 +1,53 @@
 {
-  description = "A Nix-flake-based Node.js development environment";
-
   inputs = {
+    nixpkgs.url = "nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:NixOS/nixpkgs";
   };
 
-  outputs =
-    { self
-    , flake-utils
-    , nixpkgs
-    }:
-
+  outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
-    let
-      overlays = [
-        (self: super: rec {
-          nodejs = super.nodejs-18_x;
-          pnpm = super.nodePackages.pnpm;
-          yarn = (super.yarn.override { inherit nodejs; });
-        })
-      ];
-      pkgs = import nixpkgs { inherit overlays system; };
-    in
-    {
-      devShells.default = pkgs.mkShell {
-        buildInputs = with pkgs; [ nodejs nodePackages_latest.typescript-language-server nodePackages_latest.svelte-language-server ];
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
 
-        shellHook = ''
-          echo "node `${pkgs.nodejs}/bin/node --version`"
-        '';
-      };
-    });
+        libraries = with pkgs;[
+          webkitgtk
+          gtk3
+          cairo
+          gdk-pixbuf
+          glib
+          dbus
+          openssl_3
+        ];
+
+        packages = with pkgs; [
+        webkitgtk
+          gtk3
+          cairo
+          gdk-pixbuf
+          glib
+          dbus
+          openssl_3
+          curl
+          wget
+          pkg-config
+          dbus
+          openssl_3
+          glib
+          gtk3
+          libsoup
+          webkitgtk
+          cargo rustc nodejs nodePackages_latest.typescript-language-server nodePackages_latest.svelte-language-server
+
+        ];
+      in
+      {
+        devShell = pkgs.mkShell {
+          buildInputs = packages;
+
+          shellHook =
+            ''
+              export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
+            '';
+        };
+      });
 }

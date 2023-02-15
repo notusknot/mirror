@@ -18,7 +18,7 @@
 		// Get initial items
 		const [initialJournals, subscribeFunc] = await Promise.all([
 			pb.collection("journals").getList(1, 50, {
-				sort: "created",
+				sort: "-created",
 			}),
 			pb.collection("journals").subscribe("*", async ({ action, record }) => {
 				if (action === "create") {
@@ -31,7 +31,7 @@
 				}
 				if (action === "update") {
 					const resultList = await pb.collection("journals").getList(1, 50, {
-						sort: "created",
+						sort: "-created",
 					});
 					journals.set(resultList.items as unknown as Journal[]);
 				}
@@ -84,9 +84,8 @@
 	</div>
 
 	<form on:submit|preventDefault={addJournal}>
-		<input
+		<textarea
 			placeholder="add journal"
-			type="text"
 			bind:value={journalText}
 			on:blur={addJournal}
 		/>
@@ -94,6 +93,18 @@
 </div>
 
 <style>
+	form {
+		position: fixed;
+		bottom: var(--padding);
+		width: calc(100% - var(--padding) * 2);
+	}
+
+	textarea {
+		width: 100%;
+		resize: vertical;
+		overflow: auto;
+	}
+
 	.entry {
 		padding: calc(var(--padding) / 2);
 	}

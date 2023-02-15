@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { fly } from "svelte/transition";
 	import { currentUser } from "$lib/pocketbase";
 	import { enhance, type SubmitFunction } from "$app/forms";
+	import { onMount } from "svelte";
+	import { pwaInfo } from "virtual:pwa-info";
 	import Boop from "$lib/Boop.svelte";
 	import Login from "$lib/Login.svelte";
-	import Icon from "../../static/icon.svg?raw"
+	import Icon from "../../static/icon.svg?raw";
 
 	import "./styles.css";
 
@@ -14,18 +17,46 @@
 			document.documentElement.setAttribute("data-theme", theme);
 		}
 	};
-	</script>
+
+	export let data;
+
+	onMount(async () => {
+		if (pwaInfo) {
+			// Auto Update
+			const { registerSW } = await import("virtual:pwa-register");
+			registerSW({
+				immediate: true,
+				onRegistered(r) {
+					// uncomment following code if you want check for updates
+					// r && setInterval(() => {
+					//    console.log('Checking for sw update')
+					//    r.update()
+					// }, 20000 /* 20s for testing purposes */)
+					console.log(`SW Registered: ${r}`);
+				},
+				onRegisterError(error) {
+					console.log("SW registration error", error);
+				},
+			});
+		}
+	});
+
+	$: webManifest = pwaInfo ? pwaInfo.webManifest.linkTag : "";
+</script>
 
 <svelte:head>
 	<title>Productivity</title>
 	<meta name="description" content="Todo and notes tailored to my needs" />
+	{@html webManifest}
 </svelte:head>
 
 <header>
 	<div>
 		<button><a href="/journal">Journal</a></button>
 		<Boop>
-			<button style="padding-top: 6px;" class="icon-button"><a href="/">{@html Icon}</a></button>
+			<button style="padding-top: 6px;" class="icon-button"
+				><a href="/">{@html Icon}</a></button
+			>
 		</Boop>
 	</div>
 
@@ -76,9 +107,14 @@
 	</div>
 </header>
 
-<main>
-	<slot />
-</main>
+{#key data.currentPath}
+	<main
+		in:fly={{ y: -30, duration: 200, delay: 150 }}
+		out:fly={{ y: -30, duration: 150 }}
+	>
+		<slot />
+	</main>
+{/key}
 
 <style>
 	main {

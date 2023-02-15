@@ -16,7 +16,8 @@ export const handle = (async ({ event, resolve }) => {
 		const themeColor = theme === "light" ? "#ffffff" : "#242424";
 		return await resolve(event, {
 			transformPageChunk: ({ html }) =>
-				html.replace('data-theme=""', `data-theme="${theme}"`)
+				html
+					.replace('data-theme=""', `data-theme="${theme}"`)
 					.replace(
 						'<meta name="theme-color" content="">',
 						`<meta name="theme-color" content="${themeColor}">`
