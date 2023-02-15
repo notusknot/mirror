@@ -119,7 +119,7 @@
 
 <style>
 	main {
-		padding: var(--padding);
+		padding: 0 var(--padding);
 		height: calc(100% - var(--header-height));
 		display: flex;
 		align-items: center;

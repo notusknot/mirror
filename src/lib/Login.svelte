@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { currentUser, pb } from "$lib/pocketbase";
-	// if you need a comment for this I can't help you
+	import { redirect } from "@sveltejs/kit";
+
 	let username: string;
 	let password: string;
 	let errorMessage = "";
@@ -43,6 +44,7 @@
 
 	function signOut() {
 		pb.authStore.clear();
+		throw redirect(303, "/")
 	}
 </script>
 
@@ -76,6 +78,7 @@
 <style>
 	div {
 		height: clamp(160px, 100%, 480px);
+		padding: var(--padding);
 	}
 
 	form {

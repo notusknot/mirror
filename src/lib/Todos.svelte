@@ -155,7 +155,7 @@
 	}
 
 	.todos {
-		width: clamp(160px, 100%, 620px);
+		width: clamp(160px, 100%, 500px);
 		padding: var(--padding);
 	}
 

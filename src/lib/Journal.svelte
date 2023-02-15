@@ -95,6 +95,7 @@
 <style>
 	.journals {
 		overflow-y: scroll;
+		padding: var(--padding);
 	}
 
 	.content {
