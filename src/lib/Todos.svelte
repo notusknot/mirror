@@ -118,64 +118,62 @@
 	{#if $todos.length === 0}
 		<span> You haven't added any tasks yet </span>
 	{:else}
-		<li>
-			{#each $todos as todo (todo.id)}
-				<div
-					class="todo"
-					on:touchstart|passive={(event) => handleTouchStart(event)}
-					on:touchmove|passive={(event) => handleTouchMove(event, todo)}
-					on:touchend|passive={(event) => handleTouchEnd(event)}
+		{#each $todos as todo (todo.id)}
+			<li
+				class="todo"
+				on:touchstart|passive={(event) => handleTouchStart(event)}
+				on:touchmove|passive={(event) => handleTouchMove(event, todo)}
+				on:touchend|passive={(event) => handleTouchEnd(event)}
+			>
+				<label class="checkbox">
+					<input
+						type="checkbox"
+						checked={todo.checked}
+						on:change={() => toggleChecked(todo)}
+					/>
+					<span class="checkmark" />
+				</label>
+				<span
+					class="todo-text"
+					contenteditable="true"
+					on:blur={() => updateTodo(todo)}
+					bind:textContent={todo.text}
+					class:checked={todo.checked}>{todo.text}</span
 				>
-					<label class="checkbox">
-						<input
-							type="checkbox"
-							checked={todo.checked}
-							on:change={() => toggleChecked(todo)}
-						/>
-						<span class="checkmark" />
-					</label>
-					<span
-						class="todo-text"
-						contenteditable="true"
-						on:blur={() => updateTodo(todo)}
-						bind:textContent={todo.text}
-						class:checked={todo.checked}>{todo.text}</span
-					>
 
-					<button
-						class="icon-button pomodoro-button"
-						on:click={() => togglePomodoro()}
+				<button
+					class="icon-button pomodoro-button"
+					on:click={() => togglePomodoro()}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="1em"
+						height="1em"
+						viewBox="0 0 24 24"
+						><path
+							fill="currentColor"
+							d="M12 20c4.4 0 8-3.6 8-8s-3.6-8-8-8s-8 3.6-8 8s3.6 8 8 8m0-18c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m5 9.5V13h-6V7h1.5v4.5H17Z"
+						/></svg
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="1em"
-							height="1em"
-							viewBox="0 0 24 24"
-							><path
-								fill="currentColor"
-								d="M12 20c4.4 0 8-3.6 8-8s-3.6-8-8-8s-8 3.6-8 8s3.6 8 8 8m0-18c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m5 9.5V13h-6V7h1.5v4.5H17Z"
-							/></svg
-						>
-					</button>
+				</button>
 
-					<button
-						class="icon-button delete-button"
-						on:click={() => deleteTodo(todo)}
+				<button
+					class="icon-button delete-button"
+					on:click={() => deleteTodo(todo)}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="1em"
+						height="1em"
+						viewBox="0 0 15 15"
+						><path
+							fill="currentColor"
+							d="M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27Z"
+						/></svg
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="1em"
-							height="1em"
-							viewBox="0 0 15 15"
-							><path
-								fill="currentColor"
-								d="M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27Z"
-							/></svg
-						>
-					</button>
-				</div>
-			{/each}
-		</li>
+				</button>
+			</li>
+		{/each}
 	{/if}
 
 	<form on:submit|preventDefault={addTodo}>
@@ -213,7 +211,7 @@
 		transition: transform 0.3s ease;
 		display: flex;
 		flex-direction: column;
-		gap: var(--padding);
+		gap: calc(var(--padding) / 2);
 	}
 
 	.todo-text {
