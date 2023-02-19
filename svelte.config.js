@@ -10,7 +10,7 @@ const config = {
 	kit: {
 		//adapter: adapter({}),
 	    adapter: adapter({
-			fallback: '200.html'
+			fallback: 'index.html'
 	    }),
 	    prerender: { entries: [] }
 	},
