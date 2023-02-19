@@ -1,3 +1,4 @@
+/*
 import type { Handle } from "@sveltejs/kit";
 
 export const handle = (async ({ event, resolve }) => {
@@ -23,3 +24,4 @@ export const handle = (async ({ event, resolve }) => {
 
 	return response;
 }) satisfies Handle;
+*/

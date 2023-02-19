@@ -3,3 +3,5 @@ export async function load({ url }) {
 		currentPath: url.pathname,
 	};
 }
+
+export const ssr = false;
