@@ -1,6 +1,0 @@
-import{c as i,d as l,o as v,h as u,e as d,v as $}from"../../../chunks/index3.js";import{c as m}from"../../../chunks/pocketbase.js";import{w as g}from"../../../chunks/index2.js";const j={code:".journals.svelte-1ejt09a{overflow-y:scroll;padding:var(--padding);height:clamp(160px, calc(100vh - var(--header-height)), 100vh)}.content.svelte-1ejt09a{margin:0 auto;width:clamp(160px, 100%, 720px)}form.svelte-1ejt09a{position:fixed;bottom:var(--padding);left:var(--padding);width:calc(100% - var(--padding) * 2)}textarea.svelte-1ejt09a{width:100%;resize:vertical;overflow:auto}.entry.svelte-1ejt09a{padding:calc(var(--padding) / 2)}.entry-date.svelte-1ejt09a{opacity:80%}",map:null};function f(t){return new Date(t).toLocaleString("default",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}const h=i((t,a,s,c)=>{let r,n,o;r=l(m,e=>e);let p=g([]);return o=l(p,e=>n=e),v(()=>{}),t.css.add(j),r(),o(),`<div class="journals svelte-1ejt09a"><div class="content svelte-1ejt09a">${u(n,e=>`<div class="entry svelte-1ejt09a"><span class="entry-date svelte-1ejt09a">${d(f(e.created))}: </span>
-				<span class="entry-text">${d(e.text)}</span>
-			</div>`)}</div>
-
-	<form class="svelte-1ejt09a"><textarea placeholder="add journal" class="svelte-1ejt09a"></textarea></form>
-</div>`}),_=i((t,a,s,c)=>`${$(h,"Journal").$$render(t,{},{},{})}`);export{_ as default};

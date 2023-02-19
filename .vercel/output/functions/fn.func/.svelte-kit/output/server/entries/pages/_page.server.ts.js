@@ -1,1 +1,0 @@
-import{r as s}from"../../chunks/index.js";const a={setTheme:async({url:t,cookies:o})=>{const e=t.searchParams.get("theme");console.log(e);const r=t.searchParams.get("redirectTo");throw e&&o.set("colortheme",e,{path:"/",maxAge:60*60*24*365}),s(303,r??"/")}};export{a as actions};
