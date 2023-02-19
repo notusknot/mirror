@@ -6,7 +6,7 @@
 		const theme = action.searchParams.get("theme");
 		if (theme) {
 			document.documentElement.setAttribute("data-theme", theme);
-		};
+		}
 	};
 </script>
 
