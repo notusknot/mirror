@@ -114,11 +114,11 @@
 	}
 </script>
 
-<div class="todos">
+<ul class="todos">
 	{#if $todos.length === 0}
 		<span> You haven't added any tasks yet </span>
 	{:else}
-		<div>
+		<li>
 			{#each $todos as todo (todo.id)}
 				<div
 					class="todo"
@@ -175,7 +175,7 @@
 					</button>
 				</div>
 			{/each}
-		</div>
+		</li>
 	{/if}
 
 	<form on:submit|preventDefault={addTodo}>
@@ -187,7 +187,7 @@
 			on:blur={addTodo}
 		/>
 	</form>
-</div>
+</ul>
 
 {#if showPomodoro}
 	<Pomodoro className="pomodoro" />
@@ -206,6 +206,7 @@
 	}
 
 	.todos {
+	list-style-type: none;
 		width: clamp(160px, 100%, 500px);
 		padding: var(--padding);
 		position: relative;

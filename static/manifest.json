@@ -1,6 +1,6 @@
 {
 	"name": "Mirror",
-	"short_name": "mirror",
+	"short_name": "Mirror",
 	"start_url": "/",
 	"display": "standalone",
 	"theme_color": "#ffffff",
