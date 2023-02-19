@@ -69,8 +69,6 @@
 		});
 		return formattedTimestamp;
 	}
-
-	export let className: string;
 </script>
 
 <div class="journals">
@@ -96,6 +94,7 @@
 	.journals {
 		overflow-y: scroll;
 		padding: var(--padding);
+		height: clamp(160px, calc(100vh - var(--header-height)), 100vh);
 	}
 
 	.content {

@@ -1,3 +1,4 @@
+
 {
   inputs = {
     nixpkgs.url = "nixpkgs";
@@ -20,13 +21,7 @@
         ];
 
         packages = with pkgs; [
-        webkitgtk
-          gtk3
-          cairo
-          gdk-pixbuf
-          glib
-          dbus
-          openssl_3
+        cargo rustc nodejs nodePackages_latest.typescript-language-server nodePackages_latest.svelte-language-server
           curl
           wget
           pkg-config
@@ -36,8 +31,6 @@
           gtk3
           libsoup
           webkitgtk
-          cargo rustc nodejs nodePackages_latest.typescript-language-server nodePackages_latest.svelte-language-server
-
         ];
       in
       {

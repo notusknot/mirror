@@ -1,5 +1,3 @@
-<svelte:options immutable />
-
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { currentUser, pb } from "$lib/pocketbase";
@@ -66,6 +64,11 @@
 		await pb.collection("todos").delete(todo.id);
 	}
 
+	async function updateTodo(todo: Todo) {
+		console.log(todo.text);
+		await pb.collection("todos").update(todo.id, { text: todo.text });
+	}
+
 	async function toggleChecked(todo: Todo) {
 		const updatedTodo = { ...todo, checked: !todo.checked };
 		todos.update((items) =>
@@ -74,63 +77,106 @@
 		await pb.collection("todos").update(todo.id, { checked: !todo.checked });
 	}
 
-	export let className: string;
-
 	let showPomodoro = false;
 
 	function togglePomodoro() {
 		showPomodoro = !showPomodoro;
 	}
+
+	let swipeStartX: number | null = null;
+	let swipeDistance = 0;
+
+	function handleTouchStart(event: TouchEvent) {
+		swipeStartX = event.touches[0].clientX;
+	}
+
+	function handleTouchMove(event: TouchEvent, todo: Todo) {
+		if (swipeStartX !== null) {
+			const swipeEndX = event.touches[0].clientX;
+			swipeDistance = swipeEndX - swipeStartX;
+			if (swipeDistance < -150) {
+				deleteTodo(todo);
+				swipeDistance = 0;
+				swipeStartX = null;
+			} else {
+				const transformX = swipeDistance < 0 ? swipeDistance : 0;
+				(
+					event.currentTarget as HTMLLIElement
+				).style.transform = `translateX(${transformX}px)`;
+			}
+		}
+	}
+
+	function handleTouchEnd(event: TouchEvent) {
+		(event.currentTarget as HTMLLIElement).style.transform = "";
+		swipeDistance = 0;
+		swipeStartX = null;
+	}
 </script>
 
-<div class={className}>
-	<div>
-		{#each $todos as todo (todo.id)}
-			<div class="todo">
-				<label class="checkbox">
-					<input
-						type="checkbox"
-						checked={todo.checked}
-						on:change={() => toggleChecked(todo)}
-					/>
-					<span class="checkmark" />
-				</label>
-				<span class="todo-text" class:checked={todo.checked}>{todo.text}</span>
-
-				<button
-					class="icon-button pomodoro-button"
-					on:click={() => togglePomodoro()}
+<div class="todos">
+	{#if $todos.length === 0}
+		<span> You haven't added any tasks yet </span>
+	{:else}
+		<div>
+			{#each $todos as todo (todo.id)}
+				<div
+					class="todo"
+					on:touchstart|passive={(event) => handleTouchStart(event)}
+					on:touchmove|passive={(event) => handleTouchMove(event, todo)}
+					on:touchend|passive={(event) => handleTouchEnd(event)}
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="1em"
-						height="1em"
-						viewBox="0 0 24 24"
-						><path
-							fill="currentColor"
-							d="M12 20c4.4 0 8-3.6 8-8s-3.6-8-8-8s-8 3.6-8 8s3.6 8 8 8m0-18c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m5 9.5V13h-6V7h1.5v4.5H17Z"
-						/></svg
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							checked={todo.checked}
+							on:change={() => toggleChecked(todo)}
+						/>
+						<span class="checkmark" />
+					</label>
+					<span
+						class="todo-text"
+						contenteditable="true"
+						on:blur={() => updateTodo(todo)}
+						bind:textContent={todo.text}
+						class:checked={todo.checked}>{todo.text}</span
 					>
-				</button>
 
-				<button
-					class="icon-button delete-button"
-					on:click={() => deleteTodo(todo)}
-				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="1em"
-						height="1em"
-						viewBox="0 0 15 15"
-						><path
-							fill="currentColor"
-							d="M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27Z"
-						/></svg
+					<button
+						class="icon-button pomodoro-button"
+						on:click={() => togglePomodoro()}
 					>
-				</button>
-			</div>
-		{/each}
-	</div>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="1em"
+							height="1em"
+							viewBox="0 0 24 24"
+							><path
+								fill="currentColor"
+								d="M12 20c4.4 0 8-3.6 8-8s-3.6-8-8-8s-8 3.6-8 8s3.6 8 8 8m0-18c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m5 9.5V13h-6V7h1.5v4.5H17Z"
+							/></svg
+						>
+					</button>
+
+					<button
+						class="icon-button delete-button"
+						on:click={() => deleteTodo(todo)}
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="1em"
+							height="1em"
+							viewBox="0 0 15 15"
+							><path
+								fill="currentColor"
+								d="M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27Z"
+							/></svg
+						>
+					</button>
+				</div>
+			{/each}
+		</div>
+	{/if}
 
 	<form on:submit|preventDefault={addTodo}>
 		<input
@@ -148,19 +194,30 @@
 {/if}
 
 <style>
+	[contenteditable]:focus {
+		outline: 2px solid var(--accent);
+		border-radius: calc(var(--padding) / 2);
+	}
+
 	.todo {
 		display: flex;
 		position: relative;
-		padding: calc(var(--padding) / 4) 0;
+		z-index: 1;
 	}
 
 	.todos {
 		width: clamp(160px, 100%, 500px);
 		padding: var(--padding);
+		position: relative;
+		transition: transform 0.3s ease;
+		display: flex;
+		flex-direction: column;
+		gap: var(--padding);
 	}
 
 	.todo-text {
-		padding: 0 var(--padding);
+		padding: 0 calc(var(--padding) / 2);
+		margin: 0 calc(var(--padding) / 2);
 		position: relative;
 	}
 
@@ -194,7 +251,7 @@
 		position: relative;
 		min-width: 24px;
 		max-height: 24px;
-		border: 1px solid var(--bg3);
+		border: 2px solid var(--bg3);
 		border-radius: 8px;
 		cursor: pointer;
 		background-color: var(--bg2);
@@ -202,7 +259,7 @@
 
 	.checkbox:hover,
 	.checkbox:active {
-		border: 1px solid var(--accent);
+		border-color: var(--accent);
 	}
 
 	.checkbox input[type="checkbox"] {
@@ -229,7 +286,6 @@
 	}
 
 	form {
-		padding-top: var(--padding);
 		display: flex;
 		justify-content: center;
 	}

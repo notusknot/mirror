@@ -45,15 +45,24 @@ span {
 :root {
 	--padding: 15px;
 	--header-height: 80px;
-	--text-codes: 33, 53, 71;
-	--text: rgba(var(--text-codes), 0.87);
+	--text-codes: 55, 53, 47;
+	--text: rgba(var(--text-codes), 1);
 	--accent: #ff91af;
 	--bg: #ffffff;
-	--bg2: #f9f9f9;
-	--bg3: #eaeaea;
+	--bg2: #fbfbfa;
+	--bg3: #f1f1f0;
 }
 
 html[data-theme="dark"] {
+	--text-codes: 255, 255, 255;
+	--text: rgba(var(--text-codes), 0.87);
+	--accent: #ff91af;
+	--bg: #242424;
+	--bg2: #1a1a1a;
+	--bg3: #3b3b3b;
+}
+
+body.dark {
 	--text-codes: 255, 255, 255;
 	--text: rgba(var(--text-codes), 0.87);
 	--accent: #ff91af;
@@ -91,7 +100,7 @@ button,
 input,
 textarea {
 	border-radius: calc(var(--padding) * 2 / 3);
-	border: 1px solid var(--bg3);
+	border: 2px solid var(--bg3);
 	padding: 0.6em 1em;
 	font-weight: 500;
 	color: var(--text);

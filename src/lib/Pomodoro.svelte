@@ -1,19 +1,21 @@
 <script lang="ts">
+	import { Confetti } from "svelte-confetti";
+
 	export let className: string;
 
 	let timerMinutes = 25;
 	let breakMinutes = 5;
-	let minutes: number = timerMinutes;
+	let minutes = timerMinutes;
 	let seconds = 0;
-	let intervalId: number | undefined;
+	let intervalId: number | null = null;
 	let isBreak = false;
-	let startTime: number | undefined;
+	let startTime: number | null = null;
 	let isRunning = false;
 
 	function startTimer() {
 		isRunning = true;
 		startTime = Date.now();
-		intervalId = setInterval(() => {
+		intervalId = window.setInterval(() => {
 			if (seconds === 0) {
 				if (minutes === 0) {
 					if (isBreak) {
@@ -36,22 +38,26 @@
 
 	function stopTimer() {
 		isRunning = false;
-		clearInterval(intervalId!);
+		if (intervalId !== undefined && intervalId !== null) {
+			clearInterval(intervalId);
+		}
 		minutes = timerMinutes;
 		seconds = 0;
 	}
 
-	function handleTimerMinutesChange(event: any) {
-		timerMinutes = +event.target.value;
+	function handleTimerMinutesChange(event: Event) {
+		const target = event.target as HTMLInputElement;
+		timerMinutes = +target.value;
 		minutes = timerMinutes;
 	}
 
-	function handleBreakMinutesChange(event: any) {
-		breakMinutes = +event.target.value;
+	function handleBreakMinutesChange(event: Event) {
+		const target = event.target as HTMLInputElement;
+		breakMinutes = +target.value;
 	}
 
-	function getElapsedTime() {
-		if (startTime === undefined) {
+	function getElapsedTime(): number {
+		if (startTime === null) {
 			return 0;
 		}
 		return (Date.now() - startTime) / 1000;
@@ -59,10 +65,15 @@
 </script>
 
 <div class={className}>
+	{#if getElapsedTime() === 0}
+		<Confetti y={[-0.5, 0.5]} x={[-0.5, 0.5]} />
+	{/if}
+
 	<div class="timer-container">
 		<p class="timer-label">{isBreak ? "Break" : "Work"}</p>
 		<p class="timer-time">{minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
 	</div>
+
 	{#if !isRunning}
 		<div class="input-container">
 			<label for="timer-minutes">Timer Minutes:</label>
@@ -85,7 +96,6 @@
 		</div>
 
 		<button on:click={startTimer}>Start</button>
-		<button on:click={stopTimer}>Stop</button>
 	{:else}
 		<button on:click={stopTimer}>Stop</button>
 	{/if}

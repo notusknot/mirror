@@ -8,7 +8,7 @@
 <!--Sidebar bind:show={sidebar_show} /-->
 
 {#if $currentUser}
-	<Todos className="todos" />
+	<Todos />
 {:else}
 	<Login />
 {/if}
