@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Confetti } from "svelte-confetti";
+	//import { Confetti } from "svelte-confetti";
 
 	export let className: string;
 
@@ -65,9 +65,11 @@
 </script>
 
 <div class={className}>
+	<!--
 	{#if getElapsedTime() === 0}
 		<Confetti y={[-0.5, 0.5]} x={[-0.5, 0.5]} />
 	{/if}
+-->
 
 	<div class="timer-container">
 		<p class="timer-label">{isBreak ? "Break" : "Work"}</p>

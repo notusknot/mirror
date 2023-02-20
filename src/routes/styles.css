@@ -64,32 +64,6 @@ html[data-theme="dark"] {
 	--bg3: #3b3b3b;
 }
 
-body.dark {
-	--text-codes: 255, 255, 255;
-	--text: rgba(var(--text-codes), 0.87);
-	--accent: #ff91af;
-	--bg: #242424;
-	--bg2: #1a1a1a;
-	--bg3: #3b3b3b;
-}
-
-.light-button {
-	display: none;
-}
-
-html[data-theme="light"] .light-button {
-	display: none;
-}
-html[data-theme="dark"] .dark-button {
-	display: none;
-}
-html[data-theme="light"] .dark-button {
-	display: block;
-}
-html[data-theme="dark"] .light-button {
-	display: block;
-}
-
 :root {
 	font-family: Inter, Roboto, Arial, sans-serif;
 	text-rendering: optimizeLegibility;
@@ -127,7 +101,7 @@ input:hover {
 	padding: 0px;
 	font-size: 1.2rem;
 	border: none;
-	background-color: var(--bg);
+	background-color: transparent;
 }
 
 ::-webkit-scrollbar {

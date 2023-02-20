@@ -65,7 +65,6 @@
 	}
 
 	async function updateTodo(todo: Todo) {
-		console.log(todo.text);
 		await pb.collection("todos").update(todo.id, { text: todo.text });
 	}
 
@@ -128,6 +127,7 @@
 				<label class="checkbox">
 					<input
 						type="checkbox"
+						aria-label="Toggle completed"
 						checked={todo.checked}
 						on:change={() => toggleChecked(todo)}
 					/>
@@ -143,6 +143,7 @@
 
 				<button
 					class="icon-button pomodoro-button"
+					aria-label="Toggle pomodoro"
 					on:click={() => togglePomodoro()}
 				>
 					<svg
@@ -159,6 +160,7 @@
 
 				<button
 					class="icon-button delete-button"
+					aria-label="Delete todo"
 					on:click={() => deleteTodo(todo)}
 				>
 					<svg
@@ -204,7 +206,7 @@
 	}
 
 	.todos {
-	list-style-type: none;
+		list-style-type: none;
 		width: clamp(160px, 100%, 500px);
 		padding: var(--padding);
 		position: relative;

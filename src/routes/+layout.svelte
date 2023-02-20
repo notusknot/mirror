@@ -19,10 +19,10 @@
 <header>
 	<div class="button-group">
 		{#if $currentUser}
-			<button><a href="/journal">Journal</a></button>
+			<button><a aria-label="Go to journal" href="/journal">Journal</a></button>
 		{/if}
 		<Boop>
-			<button class="icon-button home-icon"><a href="/">{@html Icon}</a></button
+			<button aria-label="Main page" class="icon-button home-icon"><a aria-label="Go to main page" href="/">{@html Icon}</a></button
 			>
 		</Boop>
 	</div>

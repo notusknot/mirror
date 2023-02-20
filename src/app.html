@@ -18,6 +18,18 @@
 		%sveltekit.head%
 	</head>
 	<body>
+		<script>
+			// Set the right color mode based on the user's preferred color scheme.
+			const darkMode = sessionStorage.getItem("darkMode");
+			const htmlElement = document.querySelector("html");
+
+			if (null !== darkMode) {
+				htmlElement.setAttribute(
+					"data-theme",
+					darkMode === "true" ? "dark" : "light"
+				);
+			}
+		</script>
 		<div>%sveltekit.body%</div>
 	</body>
 </html>
