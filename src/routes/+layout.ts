@@ -1,7 +1,17 @@
+import { PUBLIC_RENDERING_MODE } from "$env/static/public";
+
 export async function load({ url }) {
 	return {
 		currentPath: url.pathname,
 	};
 }
 
-export const ssr = false;
+let ssr;
+
+if (PUBLIC_RENDERING_MODE == "ssr") {
+	ssr = true;
+} else {
+	ssr = false;
+}
+
+export { ssr };

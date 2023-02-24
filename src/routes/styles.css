@@ -44,6 +44,10 @@ span {
 	word-break: break-word;
 }
 
+h1 {
+	text-align: center;
+}
+
 :root {
 	--padding: 15px;
 	--header-height: 80px;

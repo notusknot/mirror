@@ -1,7 +1,35 @@
+<!--
+<script lang="ts">
+	import { onMount } from "svelte";
+	import { writable } from "svelte/store";
+
+	const content = writable("");
+
+	let timeoutId;
+
+	function handleInput(event) {
+		clearTimeout(timeoutId);
+		timeoutId = setTimeout(() => {
+			content.set(event.target.innerHTML);
+		}, 1000);
+	}
+
+	$: console.log($content); // log the content to the console for debugging
+
+	let divElement;
+
+	onMount(() => {
+		divElement.innerHTML = $content; // set the initial content of the div to the value of the content store
+	});
+</script>
+
+<p contenteditable="true" bind:this={divElement} on:input={handleInput} />
+-->
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { currentUser, pb } from "$lib/pocketbase";
 	import { writable } from "svelte/store";
+	import { enhance } from "$app/forms";
 
 	type Journal = {
 		id: string;
@@ -59,8 +87,7 @@
 		journalText = "";
 	}
 
-	function formatDate(dateString: string) {
-		const date = new Date(dateString);
+	function formatDate(date: Date) {
 		const formattedTimestamp = date.toLocaleString("default", {
 			month: "short",
 			day: "numeric",
@@ -72,6 +99,7 @@
 </script>
 
 <div class="journals">
+	<h1>Journal</h1>
 	<div class="content">
 		{#each $journals as journal (journal.id)}
 			<div class="entry">
@@ -88,30 +116,38 @@
 			on:blur={addJournal}
 		/>
 	</form>
+
+	<form use:enhance method="POST" autocomplete="off">
+		<input
+			placeholder="brain dump"
+			autocomplete="off"
+			name="prompt"
+			type="text"
+		/>
+		<button>Generate</button>
+	</form>
 </div>
 
 <style>
 	.journals {
-		overflow-y: scroll;
-		padding: var(--padding);
+		padding: calc(var(--padding) * 2);
 		height: clamp(160px, calc(100vh - var(--header-height)), 100vh);
+		border-left: 2px solid var(--bg3);
 	}
 
 	.content {
-		margin: 0 auto;
-		width: clamp(160px, 100%, 720px);
+		padding: var(--padding);
+		overflow-y: scroll;
 	}
 
 	form {
-		position: fixed;
-		bottom: var(--padding);
-		left: var(--padding);
-		width: calc(100% - var(--padding) * 2);
+		position: sticky;
+		width: 100%;
 	}
 
 	textarea {
 		width: 100%;
-		resize: vertical;
+		resize: none;
 		overflow: auto;
 	}
 

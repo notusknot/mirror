@@ -1,8 +1,5 @@
 <script lang="ts">
 	//import { Confetti } from "svelte-confetti";
-
-	export let className: string;
-
 	let timerMinutes = 25;
 	let breakMinutes = 5;
 	let minutes = timerMinutes;
@@ -55,16 +52,9 @@
 		const target = event.target as HTMLInputElement;
 		breakMinutes = +target.value;
 	}
-
-	function getElapsedTime(): number {
-		if (startTime === null) {
-			return 0;
-		}
-		return (Date.now() - startTime) / 1000;
-	}
 </script>
 
-<div class={className}>
+<div>
 	<!--
 	{#if getElapsedTime() === 0}
 		<Confetti y={[-0.5, 0.5]} x={[-0.5, 0.5]} />
@@ -104,10 +94,6 @@
 </div>
 
 <style>
-	.pomodoro {
-		padding: var(--padding);
-		width: clamp(240px, 420px, 420px);
-	}
 	.timer-container {
 		display: flex;
 		flex-direction: column;

@@ -1,7 +1,11 @@
+
 <script lang="ts">
 	import Boop from "$lib/Boop.svelte";
 	import Sun from "../../static/sun.svg?raw";
 	import Moon from "../../static/moon.svg?raw";
+	import { onMount } from "svelte";
+
+	let themeIcon = Sun;
 
 	const htmlElement = document.querySelector("html");
 
@@ -47,6 +51,6 @@
 <style>
 	.icon-button {
 		font-size: 2rem;
-		padding: 0 var(--padding);
+		padding: 0;
 	}
 </style>
