@@ -82,7 +82,6 @@
 		<Pomodoro />
 	{/if}
 
-	<h1>Tasks</h1>
 	<ul>
 		{#if $todos.length === 0}
 			<span> You haven't added any tasks yet </span>

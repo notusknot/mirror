@@ -50,7 +50,6 @@ h1 {
 
 :root {
 	--padding: 15px;
-	--header-height: 80px;
 	--text-codes: 55, 53, 47;
 	--text: rgba(var(--text-codes), 1);
 	--accent: #ff91af;

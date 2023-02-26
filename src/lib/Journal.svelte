@@ -99,7 +99,6 @@
 </script>
 
 <div class="journals">
-	<h1>Journal</h1>
 	<div class="content">
 		{#each $journals as journal (journal.id)}
 			<div class="entry">
@@ -125,12 +124,11 @@
 <style>
 	.journals {
 		padding: calc(var(--padding) * 2);
-		height: clamp(160px, calc(100vh - var(--header-height)), 100vh);
+		height: clamp(160px, 100vh, 100vh);
 		border-left: 2px solid var(--bg3);
 	}
 
 	.content {
-		padding: var(--padding);
 		overflow-y: scroll;
 	}
 
@@ -140,7 +138,7 @@
 	}
 
 	.entry {
-		padding: calc(var(--padding) / 2);
+		padding-bottom: var(--padding);
 	}
 
 	.entry-date {

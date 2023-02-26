@@ -50,7 +50,7 @@
 </script>
 
 {#if $currentUser}
-	<button class="sign-out" on:click={signOut}> Sign Out </button>
+	<button on:click={signOut}> Sign Out </button>
 {:else}
 	<div>
 		<form on:submit|preventDefault>
@@ -83,10 +83,6 @@
 	div {
 		width: clamp(160px, 100%, 280px);
 		padding: var(--padding);
-	}
-
-	.sign-out {
-		background-color: var(--bg);
 	}
 
 	#password {

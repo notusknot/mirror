@@ -29,12 +29,13 @@
 
 <style>
 	header {
-		background-color: var(--bg2);
-		height: var(--header-height);
+		background-color: transparent;
+		z-index: 999;
+		position: absolute;
+		width: 100%;
 		padding: var(--padding);
-		border-bottom: 2px solid var(--bg3);
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		justify-content: end;
+		align-items: end;
 	}
 </style>
