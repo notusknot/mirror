@@ -30,6 +30,7 @@
 <style>
 	header {
 		background-color: var(--bg2);
+		height: var(--header-height);
 		padding: var(--padding);
 		border-bottom: 2px solid var(--bg3);
 		display: flex;
