@@ -8,72 +8,73 @@
 	let todoText: string;
 	let unsubscribe: () => void;
 
+	const getInitialTodos = async () => {
+	    return pb.collection("todos").getList(1, 50, {
+	        sort: "created",
+	    });
+	};
+
+	const subscribeToTodos = async () => {
+	    return pb.collection("todos").subscribe("*", async ({ action, record }) => {
+	        if (action === "create") {
+	            todos.update((items) => [...items, record as unknown as Todo]);
+	        } else if (action === "delete") {
+	            todos.update((items) => items.filter((item) => item.id !== record.id));
+	        } else if (action === "update") {
+	            const resultList = await getInitialTodos();
+	            todos.set(resultList.items as unknown as Todo[]);
+	        }
+	    });
+	};
+
 	onMount(async () => {
-		// Get initial items
-		const [initialTodos, subscribeFunc] = await Promise.all([
-			pb.collection("todos").getList(1, 50, {
-				sort: "created",
-			}),
-			pb.collection("todos").subscribe("*", async ({ action, record }) => {
-				if (action === "create") {
-					todos.update((items) => [...items, record as unknown as Todo]);
-				}
-				if (action === "delete") {
-					todos.update((items) =>
-						items.filter((item) => item.id !== record.id)
-					);
-				}
-				if (action === "update") {
-					const resultList = await pb.collection("todos").getList(1, 50, {
-						sort: "created",
-					});
-					todos.set(resultList.items as unknown as Todo[]);
-				}
-			}),
-		]);
-		todos.set(initialTodos.items as unknown as Todo[]);
-		unsubscribe = subscribeFunc;
+	    const [initialTodos, subscribeFunc] = await Promise.all([
+	        getInitialTodos(),
+	        subscribeToTodos(),
+	    ]);
+	    todos.set(initialTodos.items as unknown as Todo[]);
+	    unsubscribe = subscribeFunc;
 	});
 
 	onDestroy(() => {
 		unsubscribe?.();
 	});
 
-	async function addTodo(text: string) {
-		if (!text) {
-			return;
-		}
+	const addTodo = async (text: string) => {
+    if (!text) {
+        return;
+    }
 
-		const data = {
-			text: text,
-			checked: false,
-			user: $currentUser ? $currentUser.id : "",
-		};
-		await pb.collection("todos").create(data);
-		todoText = "";
-	}
+    const data = {
+        text: text,
+        checked: false,
+        user: $currentUser ? $currentUser.id : "",
+    };
+    await pb.collection("todos").create(data);
+	todoText = "";
+};
 
-	async function deleteTodo(todo: Todo) {
-		await pb.collection("todos").delete(todo.id);
-	}
+	const deleteTodo = async (todo: Todo) => {
+	    await pb.collection("todos").delete(todo.id);
+	};
 
-	async function updateTodo(todo: Todo) {
-		await pb.collection("todos").update(todo.id, { text: todo.text });
-	}
+	const updateTodo = async (todo: Todo, text: string) => {
+	    await pb.collection("todos").update(todo.id, { text });
+	};
 
-	async function toggleChecked(todo: Todo) {
-		const updatedTodo = { ...todo, checked: !todo.checked };
-		todos.update((items) =>
-			items.map((item) => (item.id === todo.id ? updatedTodo : item))
-		);
-		await pb.collection("todos").update(todo.id, { checked: !todo.checked });
-	}
+	const toggleChecked = async (todo: Todo) => {
+	    const updatedTodo = { ...todo, checked: !todo.checked };
+	    await pb.collection("todos").update(todo.id, { checked: updatedTodo.checked });
+	    todos.update((items) =>
+	        items.map((item) => (item.id === todo.id ? updatedTodo : item))
+	    );
+	};
 
 	let showPomodoro = false;
 
-	function togglePomodoro() {
-		showPomodoro = !showPomodoro;
-	}
+	const togglePomodoro = () => {
+	    showPomodoro = !showPomodoro;
+	};
 </script>
 
 <div class="todos">

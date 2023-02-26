@@ -1,3 +1,4 @@
+<!--
 
 <script lang="ts">
 	import Boop from "$lib/Boop.svelte";
@@ -7,7 +8,7 @@
 
 	let themeIcon = Sun;
 
-	const htmlElement = document.querySelector("html");
+    const htmlElement = document.querySelector("html");
 
 	function toggleColorScheme(enableDarkMode = false) {
 		if (enableDarkMode) {
@@ -54,3 +55,4 @@
 		padding: 0;
 	}
 </style>
+-->

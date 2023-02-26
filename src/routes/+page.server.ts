@@ -6,6 +6,7 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+/*
 let extracted;
 
 export const load = () => {
@@ -13,10 +14,10 @@ export const load = () => {
 		extracted,
 	};
 };
+*/
 
 export const actions = {
-	default: async ({ request }) => {
-		extracted = undefined;
+	extract: async ({ request }) => {
 		const formData = await request.formData();
 		const prompt: string = formData.get("prompt");
 		const cleanPrompt = prompt.trim().endsWith(".")
@@ -39,6 +40,6 @@ export const actions = {
 				? generatedText.slice(1)
 				: generatedText.replace(/^[^\.]*\./, "");
 		console.log(cleanedText);
-		extracted = JSON.parse(cleanedText);
+		return JSON.parse(cleanedText);
 	},
 };

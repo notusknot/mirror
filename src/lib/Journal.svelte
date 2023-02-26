@@ -109,22 +109,16 @@
 		{/each}
 	</div>
 
-	<form on:submit|preventDefault={addJournal}>
-		<textarea
-			placeholder="add journal"
-			bind:value={journalText}
-			on:blur={addJournal}
-		/>
-	</form>
-
-	<form use:enhance method="POST" autocomplete="off">
+	<form use:enhance method="POST" action="?/extract" autocomplete="off">
 		<input
 			placeholder="brain dump"
 			autocomplete="off"
 			name="prompt"
 			type="text"
+			bind:value={journalText}
+			on:blur={addJournal}
 		/>
-		<button>Generate</button>
+		<button>Extract</button>
 	</form>
 </div>
 
@@ -143,12 +137,6 @@
 	form {
 		position: sticky;
 		width: 100%;
-	}
-
-	textarea {
-		width: 100%;
-		resize: none;
-		overflow: auto;
 	}
 
 	.entry {
