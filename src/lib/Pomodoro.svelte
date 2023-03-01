@@ -1,5 +1,4 @@
 <script lang="ts">
-	//import { Confetti } from "svelte-confetti";
 	let timerMinutes = 25;
 	let breakMinutes = 5;
 	let minutes = timerMinutes;
@@ -13,23 +12,26 @@
 		isRunning = true;
 		startTime = Date.now();
 		intervalId = window.setInterval(() => {
-			if (seconds === 0) {
-				if (minutes === 0) {
-					if (isBreak) {
-						minutes = timerMinutes;
-						isBreak = false;
-					} else {
-						minutes = breakMinutes;
-						isBreak = true;
-					}
-					seconds = 59;
-				} else {
-					minutes--;
-					seconds = 59;
-				}
-			} else {
+			if (seconds !== 0) {
 				seconds--;
+				return;
 			}
+
+			if (minutes !== 0) {
+				minutes--;
+				seconds = 59;
+				return;
+			}
+
+			if (isBreak) {
+				minutes = timerMinutes;
+				isBreak = false;
+			} else {
+				minutes = breakMinutes;
+				isBreak = true;
+			}
+
+			seconds = 59;
 		}, 1000);
 	}
 
@@ -54,38 +56,28 @@
 	}
 </script>
 
-<div>
-	<!--
-	{#if getElapsedTime() === 0}
-		<Confetti y={[-0.5, 0.5]} x={[-0.5, 0.5]} />
-	{/if}
--->
-
+<div class="pomodoro">
 	<div class="timer-container">
-		<p class="timer-label">{isBreak ? "Break" : "Work"}</p>
-		<p class="timer-time">{minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
+		<p>{isBreak ? "Break" : "Work"}</p>
+		<p>{minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
 	</div>
 
 	{#if !isRunning}
-		<div class="input-container">
-			<label for="timer-minutes">Timer Minutes:</label>
-			<input
-				type="number"
-				id="timer-minutes"
-				bind:value={timerMinutes}
-				on:input={handleTimerMinutesChange}
-			/>
-		</div>
+		<label for="timer-minutes">Timer Minutes:</label>
+		<input
+			type="number"
+			id="timer-minutes"
+			bind:value={timerMinutes}
+			on:input={handleTimerMinutesChange}
+		/>
 
-		<div class="input-container">
-			<label for="break-minutes">Break Minutes:</label>
-			<input
-				type="number"
-				id="break-minutes"
-				bind:value={breakMinutes}
-				on:input={handleBreakMinutesChange}
-			/>
-		</div>
+		<label for="break-minutes">Break Minutes:</label>
+		<input
+			type="number"
+			id="break-minutes"
+			bind:value={breakMinutes}
+			on:input={handleBreakMinutesChange}
+		/>
 
 		<button on:click={startTimer}>Start</button>
 	{:else}
@@ -94,30 +86,16 @@
 </div>
 
 <style>
-	.timer-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
+	.pomodoro {
+		padding: 0 calc(var(--padding) * 2);
 	}
 
-	.timer-label {
-		font-size: 1.2em;
-		font-weight: bold;
+	input {
+		width: calc(4ch + var(--padding));
 	}
 
-	.timer-time {
-		font-size: 2em;
-		font-weight: bold;
-	}
-
-	.input-container {
-		display: flex;
-		align-items: center;
-		margin: 10px 0;
-	}
-
-	label {
-		margin-right: 10px;
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
 	}
 </style>

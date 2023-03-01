@@ -3,37 +3,36 @@
 	import { currentUser, pb } from "$lib/pocketbase";
 	import { todos } from "$lib/stores";
 	import type { Todo } from "$lib/stores";
-	import Pomodoro from "$lib/Pomodoro.svelte";
 
 	let todoText: string;
 	let unsubscribe: () => void;
 
 	const getInitialTodos = async () => {
-	    return pb.collection("todos").getList(1, 50, {
-	        sort: "created",
-	    });
+		return pb.collection("todos").getList(1, 50, {
+			sort: "created",
+		});
 	};
 
 	const subscribeToTodos = async () => {
-	    return pb.collection("todos").subscribe("*", async ({ action, record }) => {
-	        if (action === "create") {
-	            todos.update((items) => [...items, record as unknown as Todo]);
-	        } else if (action === "delete") {
-	            todos.update((items) => items.filter((item) => item.id !== record.id));
-	        } else if (action === "update") {
-	            const resultList = await getInitialTodos();
-	            todos.set(resultList.items as unknown as Todo[]);
-	        }
-	    });
+		return pb.collection("todos").subscribe("*", async ({ action, record }) => {
+			if (action === "create") {
+				todos.update((items) => [...items, record as unknown as Todo]);
+			} else if (action === "delete") {
+				todos.update((items) => items.filter((item) => item.id !== record.id));
+			} else if (action === "update") {
+				const resultList = await getInitialTodos();
+				todos.set(resultList.items as unknown as Todo[]);
+			}
+		});
 	};
 
 	onMount(async () => {
-	    const [initialTodos, subscribeFunc] = await Promise.all([
-	        getInitialTodos(),
-	        subscribeToTodos(),
-	    ]);
-	    todos.set(initialTodos.items as unknown as Todo[]);
-	    unsubscribe = subscribeFunc;
+		const [initialTodos, subscribeFunc] = await Promise.all([
+			getInitialTodos(),
+			subscribeToTodos(),
+		]);
+		todos.set(initialTodos.items as unknown as Todo[]);
+		unsubscribe = subscribeFunc;
 	});
 
 	onDestroy(() => {
@@ -41,50 +40,42 @@
 	});
 
 	const addTodo = async (text: string) => {
-    if (!text) {
-        return;
-    }
+		if (!text) {
+			return;
+		}
 
-    const data = {
-        text: text,
-        checked: false,
-        user: $currentUser ? $currentUser.id : "",
-    };
-    await pb.collection("todos").create(data);
-	todoText = "";
-};
+		const data = {
+			text: text,
+			checked: false,
+			user: $currentUser ? $currentUser.id : "",
+		};
+		await pb.collection("todos").create(data);
+		todoText = "";
+	};
 
 	const deleteTodo = async (todo: Todo) => {
-	    await pb.collection("todos").delete(todo.id);
+		await pb.collection("todos").delete(todo.id);
 	};
 
 	const updateTodo = async (todo: Todo, text: string) => {
-	    await pb.collection("todos").update(todo.id, { text });
+		await pb.collection("todos").update(todo.id, { text });
 	};
 
 	const toggleChecked = async (todo: Todo) => {
-	    const updatedTodo = { ...todo, checked: !todo.checked };
-	    await pb.collection("todos").update(todo.id, { checked: updatedTodo.checked });
-	    todos.update((items) =>
-	        items.map((item) => (item.id === todo.id ? updatedTodo : item))
-	    );
-	};
-
-	let showPomodoro = false;
-
-	const togglePomodoro = () => {
-	    showPomodoro = !showPomodoro;
+		const updatedTodo = { ...todo, checked: !todo.checked };
+		await pb
+			.collection("todos")
+			.update(todo.id, { checked: updatedTodo.checked });
+		todos.update((items) =>
+			items.map((item) => (item.id === todo.id ? updatedTodo : item))
+		);
 	};
 </script>
 
 <div class="todos">
-	{#if showPomodoro}
-		<Pomodoro />
-	{/if}
-
 	<ul>
 		{#if $todos.length === 0}
-			<span> You haven't added any tasks yet </span>
+			<p> You haven't added any tasks yet </p>
 		{:else}
 			{#each $todos as todo (todo.id)}
 				<li class="todo">
@@ -104,23 +95,6 @@
 						bind:textContent={todo.text}
 						class:checked={todo.checked}>{todo.text}</span
 					>
-
-					<button
-						class="icon-button pomodoro-button"
-						aria-label="Toggle pomodoro"
-						on:click={() => togglePomodoro()}
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="1em"
-							height="1em"
-							viewBox="0 0 24 24"
-							><path
-								fill="currentColor"
-								d="M12 20c4.4 0 8-3.6 8-8s-3.6-8-8-8s-8 3.6-8 8s3.6 8 8 8m0-18c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m5 9.5V13h-6V7h1.5v4.5H17Z"
-							/></svg
-						>
-					</button>
 
 					<button
 						class="icon-button delete-button"
@@ -162,7 +136,6 @@
 
 	.todos {
 		padding: calc(var(--padding) * 2);
-		background-color: var(--bg2);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -189,6 +162,10 @@
 		align-items: center;
 	}
 
+	p {
+		padding-bottom: var(--padding);
+	}
+
 	.todo-text {
 		padding: 0 calc(var(--padding) / 2);
 		margin: 0 calc(var(--padding) / 2);
@@ -198,11 +175,6 @@
 	.delete-button {
 		position: absolute;
 		right: 0;
-	}
-
-	.pomodoro-button {
-		position: absolute;
-		right: calc(var(--padding) * 1.7);
 	}
 
 	.todo-text::before {

@@ -14,7 +14,7 @@
 </svelte:head>
 
 <header>
-	<ThemeToggle />
+	<!--<ThemeToggle />-->
 
 	<div>
 		{#if $currentUser}
@@ -32,7 +32,7 @@
 		background-color: transparent;
 		z-index: 999;
 		position: absolute;
-		width: 100%;
+		right: 0;
 		padding: var(--padding);
 		display: flex;
 		justify-content: end;

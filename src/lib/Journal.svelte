@@ -1,35 +1,82 @@
-<!--
-<script lang="ts">
-	import { onMount } from "svelte";
-	import { writable } from "svelte/store";
-
-	const content = writable("");
-
-	let timeoutId;
-
-	function handleInput(event) {
-		clearTimeout(timeoutId);
-		timeoutId = setTimeout(() => {
-			content.set(event.target.innerHTML);
-		}, 1000);
-	}
-
-	$: console.log($content); // log the content to the console for debugging
-
-	let divElement;
-
-	onMount(() => {
-		divElement.innerHTML = $content; // set the initial content of the div to the value of the content store
-	});
-</script>
-
-<p contenteditable="true" bind:this={divElement} on:input={handleInput} />
--->
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { currentUser, pb } from "$lib/pocketbase";
 	import { writable } from "svelte/store";
-	import { enhance } from "$app/forms";
+	import type { CreateCompletionResponse } from "openai";
+	import { SSE } from "sse.js";
+
+	// TODO comment this code nicely with *why*
+	let context = "";
+	let loading = false;
+	let error = false;
+	let answer = "";
+
+	const handleSubmit = async () => {
+		addJournal();
+
+		loading = true;
+		error = false;
+		answer = "";
+
+		const eventSource = new SSE("/api/extract", {
+			headers: {
+				"Content-Type": "application/json",
+			},
+			payload: JSON.stringify({ context }),
+		});
+
+		context = "";
+
+		eventSource.addEventListener("error", (e) => {
+			error = true;
+			loading = false;
+			console.log(e);
+			alert("Something went wrong!");
+		});
+
+		eventSource.addEventListener("message", (e) => {
+			try {
+				loading = false;
+				if (e.data === "[DONE]") {
+					answer = JSON.parse(answer + "]}");
+
+					answer.events.forEach((event) => {
+						const data = {
+							text: event.text,
+							checked: false,
+							user: $currentUser ? $currentUser.id : "",
+							date: event.date,
+							time: event.time,
+						};
+						pb.collection("todos").create(data);
+					});
+
+					answer.tasks.forEach((task) => {
+						const data = {
+							text: task.text,
+							checked: false,
+							user: $currentUser ? $currentUser.id : "",
+							date: task.date,
+							time: task.time,
+						};
+						pb.collection("todos").create(data);
+					});
+
+					return;
+				}
+				const completionResponse: CreateCompletionResponse = JSON.parse(e.data);
+				const [{ text }] = completionResponse.choices;
+				answer = (answer ?? "") + text;
+			} catch (err) {
+				error = true;
+				loading = false;
+				console.error(err);
+				alert("Something went wrong!");
+			}
+		});
+
+		eventSource.stream();
+	};
 
 	type Journal = {
 		id: string;
@@ -46,7 +93,7 @@
 		// Get initial items
 		const [initialJournals, subscribeFunc] = await Promise.all([
 			pb.collection("journals").getList(1, 50, {
-				sort: "-created",
+				sort: "created",
 			}),
 			pb.collection("journals").subscribe("*", async ({ action, record }) => {
 				if (action === "create") {
@@ -74,17 +121,17 @@
 	});
 
 	async function addJournal() {
-		if (!journalText) {
+		if (!context) {
 			return;
 		}
 
 		const data = {
-			text: journalText,
+			text: context,
 			checked: false,
 			user: $currentUser ? $currentUser.id : "",
 		};
 		await pb.collection("journals").create(data);
-		journalText = "";
+		context = "";
 	}
 
 	function formatDate(date: Date) {
@@ -108,16 +155,12 @@
 		{/each}
 	</div>
 
-	<form use:enhance method="POST" action="?/extract" autocomplete="off">
-		<input
-			placeholder="brain dump"
-			autocomplete="off"
-			name="prompt"
-			type="text"
-			bind:value={journalText}
-			on:blur={addJournal}
-		/>
-		<button>Extract</button>
+	<form on:submit|preventDefault={() => handleSubmit()}>
+		<input bind:value={context} placeholder="journal" />
+		<button> add </button>
+		{#if loading}
+			<p>loading...</p>
+		{/if}
 	</form>
 </div>
 
@@ -126,14 +169,25 @@
 		padding: calc(var(--padding) * 2);
 		height: clamp(160px, 100vh, 100vh);
 		border-left: 2px solid var(--bg3);
+		display: flex;
+		flex-direction: column;
 	}
 
 	.content {
 		overflow-y: scroll;
+		display: flex;
+		flex-direction: column-reverse;
+		margin-bottom: var(--padding);
+		height: 100%;
 	}
 
 	form {
-		position: sticky;
+		bottom: calc(var(--padding) * 2);
+		display: flex;
+		gap: var(--padding);
+	}
+
+	input {
 		width: 100%;
 	}
 
