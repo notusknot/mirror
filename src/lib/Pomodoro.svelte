@@ -57,7 +57,7 @@
 </script>
 
 <div class="pomodoro">
-	<div class="timer-container">
+	<div>
 		<p>{isBreak ? "Break" : "Work"}</p>
 		<p>{minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
 	</div>
@@ -98,4 +98,9 @@
 	input::-webkit-inner-spin-button {
 		-webkit-appearance: none;
 	}
+
+	input[type=number] {
+		-moz-appearance:textfield; /* Firefox */
+	}
+
 </style>
