@@ -1,11 +1,14 @@
 <script lang="ts">
-	import { currentUser } from "$lib/pocketbase";
-	import ThemeToggle from "$lib/ThemeToggle.svelte";
+	import { pb, currentUser } from "$lib/pocketbase";
 	import Login from "$lib/Login.svelte";
+	import { redirect } from "@sveltejs/kit";
 
 	import "./styles.css";
 
-	export let data: any;
+	function signOut() {
+		pb.authStore.clear();
+		throw redirect(303, "/");
+	}
 </script>
 
 <svelte:head>
@@ -16,16 +19,12 @@
 <header>
 	<!--<ThemeToggle />-->
 
-	<div>
-		{#if $currentUser}
-			<Login />
-		{/if}
-	</div>
+	{#if $currentUser}
+		<button on:click={signOut}>Sign Out</button>
+	{/if}
 </header>
 
-{#key data.currentPath}
-	<slot />
-{/key}
+<slot />
 
 <style>
 	header {
@@ -34,8 +33,5 @@
 		position: absolute;
 		right: 0;
 		padding: var(--padding);
-		display: flex;
-		justify-content: end;
-		align-items: end;
 	}
 </style>

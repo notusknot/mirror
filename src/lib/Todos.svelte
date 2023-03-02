@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from "svelte";
 	import { currentUser, pb } from "$lib/pocketbase";
 	import { todos } from "$lib/stores";
+	import { flip } from 'svelte/animate';
 	import type { Todo } from "$lib/stores";
 
 	let todoText: string;
@@ -75,10 +76,10 @@
 <div class="todos">
 	<ul>
 		{#if $todos.length === 0}
-			<p> You haven't added any tasks yet </p>
+			<p>You haven't added any tasks yet</p>
 		{:else}
 			{#each $todos as todo (todo.id)}
-				<li class="todo">
+				<li>
 					<label class="checkbox">
 						<input
 							type="checkbox"
@@ -129,13 +130,7 @@
 </div>
 
 <style>
-	[contenteditable]:focus {
-		outline: 2px solid var(--accent);
-		border-radius: calc(var(--padding) / 2);
-	}
-
 	.todos {
-		padding: calc(var(--padding) * 2);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -147,28 +142,23 @@
 		background-color: var(--bg);
 	}
 
-	.todo {
-		display: flex;
-		position: relative;
-		padding-bottom: var(--padding);
-		width: 100%;
-	}
-
 	ul {
 		padding: 0px;
 		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		gap: var(--padding);
 	}
 
-	p {
-		padding-bottom: var(--padding);
+	li {
+		position: relative;
+		gap: var(--padding);
+		width: 100%;
+		display: flex;
 	}
 
 	.todo-text {
-		padding: 0 calc(var(--padding) / 2);
-		margin: 0 calc(var(--padding) / 2);
 		position: relative;
 	}
 
@@ -180,7 +170,6 @@
 	.todo-text::before {
 		content: "";
 		position: absolute;
-		left: calc(var(--padding) - 1ch / 2);
 		top: 50%;
 		height: 2px;
 		background-color: rgba(var(--text-codes), 0.75);
@@ -190,7 +179,7 @@
 	}
 
 	.todo-text.checked::before {
-		width: calc(100% - var(--padding) - 1ch / 2);
+		width: 100%;
 	}
 
 	.checkbox {

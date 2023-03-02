@@ -1,0 +1,1 @@
+async function r({url:t}){return{currentPath:t.pathname}}let e;e=!0;const a=Object.freeze(Object.defineProperty({__proto__:null,load:r,get ssr(){return e}},Symbol.toStringTag,{value:"Module"}));export{a as _,r as l,e as s};

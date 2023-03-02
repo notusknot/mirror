@@ -82,10 +82,9 @@
 		id: string;
 		text: string;
 		user: string;
-		created: Date;
+		created: string;
 	};
 
-	let journalText: string;
 	let journals = writable<Journal[]>([]);
 	let unsubscribe: () => void;
 
@@ -134,7 +133,8 @@
 		context = "";
 	}
 
-	function formatDate(date: Date) {
+	function formatDate(dateString: string) {
+		const date = new Date(dateString);
 		const formattedTimestamp = date.toLocaleString("default", {
 			month: "short",
 			day: "numeric",
@@ -166,33 +166,27 @@
 
 <style>
 	.journals {
-		padding: calc(var(--padding) * 2);
-		height: clamp(160px, 100vh, 100vh);
-		border-left: 2px solid var(--bg3);
+		height: 100%;
 		display: flex;
 		flex-direction: column;
 	}
 
 	.content {
-		overflow-y: scroll;
 		display: flex;
-		flex-direction: column-reverse;
-		margin-bottom: var(--padding);
+		flex-direction: column;
+		overflow-y: scroll;
+		gap: var(--padding);
+		padding-bottom: var(--padding);
 		height: 100%;
 	}
 
 	form {
-		bottom: calc(var(--padding) * 2);
 		display: flex;
 		gap: var(--padding);
 	}
 
 	input {
 		width: 100%;
-	}
-
-	.entry {
-		padding-bottom: var(--padding);
 	}
 
 	.entry-date {

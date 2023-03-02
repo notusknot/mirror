@@ -3,6 +3,10 @@ import type { RequestHandler } from "./$types";
 import type { CreateCompletionRequest } from "openai";
 import { error, type Config } from "@sveltejs/kit";
 
+export const config: Config = {
+	runtime: 'edge'
+}
+
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		if (!SECRET_API_KEY) {

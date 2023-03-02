@@ -86,9 +86,6 @@
 </div>
 
 <style>
-	.pomodoro {
-		padding: 0 calc(var(--padding) * 2);
-	}
 
 	input {
 		width: calc(4ch + var(--padding));
@@ -99,8 +96,7 @@
 		-webkit-appearance: none;
 	}
 
-	input[type=number] {
-		-moz-appearance:textfield; /* Firefox */
+	input[type="number"] {
+		-moz-appearance: textfield; /* Firefox */
 	}
-
 </style>

@@ -13,7 +13,9 @@
 			<Pomodoro />
 		</div>
 
-		<Journal />
+		<div class="right">
+			<Journal />
+		</div>
 	{:else}
 		<Login />
 	{/if}
@@ -24,6 +26,11 @@
 		display: grid;
 		grid-template-columns: 1fr 1.618fr;
 		grid-template-rows: 1fr;
+		height: 100svh;
+	}
+
+	main > * {
+		padding: calc(var(--padding) * 2);
 	}
 
 	.left {
@@ -31,5 +38,6 @@
 		grid-template-rows: 1.618fr 1fr;
 		grid-template-columns: 1fr;
 		background-color: var(--bg2);
+		border-right: 2px solid var(--bg3);
 	}
 </style>
