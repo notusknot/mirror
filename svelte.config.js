@@ -16,7 +16,7 @@ const config = {
 		prerender: { entries: [] },
 		*/
 		adapter: adapter({
-			runtime: 'nodejs18.x'
+			runtime: 'edge'
 	    })
 	},
 };
