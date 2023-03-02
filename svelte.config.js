@@ -15,9 +15,7 @@ const config = {
 		}),
 		prerender: { entries: [] },
 		*/
-		adapter: adapter({
-			runtime: 'edge'
-	    })
+		adapter: adapter()
 	},
 };
 

@@ -3,7 +3,7 @@ import type { RequestHandler } from "./$types";
 import type { CreateCompletionRequest } from "openai";
 import { error } from "@sveltejs/kit";
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST = async ({ request }) => {
 	try {
 		if (!SECRET_API_KEY) {
 			throw new Error("SECRET_API_KEY env var not set");

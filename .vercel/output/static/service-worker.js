@@ -26,7 +26,7 @@ const o = [
   "/moon.svg",
   "/robots.txt",
   "/sun.svg"
-], l = "1677787231962", n = `cache-${l}`, i = [
+], l = "1677798306418", n = `cache-${l}`, i = [
   ...o,
   // the app itself
   ...p
