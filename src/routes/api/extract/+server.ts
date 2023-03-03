@@ -4,6 +4,8 @@ import type { CreateCompletionRequest } from "openai";
 import { error } from "@sveltejs/kit";
 
 export const POST = async ({ request }) => {
+	console.log("asdF");
+	/*
 	try {
 		if (!SECRET_API_KEY) {
 			throw new Error("SECRET_API_KEY env var not set");
@@ -56,4 +58,5 @@ export const POST = async ({ request }) => {
 		console.error(err);
 		throw error(500, "An error occurred");
 	}
+	*/
 };
