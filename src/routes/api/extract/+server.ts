@@ -1,10 +1,12 @@
+/*
 import { SECRET_API_KEY } from "$env/static/private";
 import type { RequestHandler } from "./$types";
 import type { CreateCompletionRequest } from "openai";
 import { error } from "@sveltejs/kit";
+*/
 
 export const POST = async ({ request }) => {
-	console.log("asdF");
+	console.log(request);
 	/*
 	try {
 		if (!SECRET_API_KEY) {
