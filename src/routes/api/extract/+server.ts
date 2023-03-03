@@ -1,28 +1,28 @@
-/*
-import { SECRET_API_KEY } from "$env/static/private";
-import type { RequestHandler } from "./$types";
-import type { CreateCompletionRequest } from "openai";
-import { error } from "@sveltejs/kit";
-*/
+import { SECRET_API_KEY } from '$env/static/private'
+import type { RequestHandler } from './$types'
+import type { CreateCompletionRequest } from 'openai'
+import { error, type Config } from '@sveltejs/kit'
 
-export const POST = async ({ request }) => {
-	console.log(request);
-	/*
+export const config: Config = {
+	runtime: 'edge'
+}
+
+export const POST: RequestHandler = async ({ request }) => {
 	try {
 		if (!SECRET_API_KEY) {
-			throw new Error("SECRET_API_KEY env var not set");
+			throw new Error('SECRET_API_KEY env var not set')
 		}
 
-		const requestData = await request.json();
+		const requestData = await request.json()
 
 		if (!requestData) {
-			throw new Error("Request data missing");
+			throw new Error('Request data missing')
 		}
 
-		const { context } = requestData;
+		const { context } = requestData
 
 		if (!context) {
-			throw new Error("No context provided");
+			throw new Error('No context provided')
 		}
 
 		const prompt = `${context.trim()} \n\n###\n\n`;
@@ -36,29 +36,28 @@ export const POST = async ({ request }) => {
 			stream: true,
 		};
 
-		const response = await fetch("https://api.openai.com/v1/completions", {
+		const response = await fetch('https://api.openai.com/v1/completions', {
 			headers: {
-				Authorization: `Bearer ${SECRET_API_KEY}`,
-				"Content-Type": "application/json",
+				Authorization: `Bearer ${OPENAI_KEY}`,
+				'Content-Type': 'application/json'
 			},
-			method: "POST",
-			body: JSON.stringify(completionOpts),
-		});
+			method: 'POST',
+			body: JSON.stringify(completionOpts)
+		})
 
 		if (!response.ok) {
-			const err = await response.json();
-			console.error(err);
-			throw new Error("Failed to create completion", err);
+			const err = await response.json()
+			console.error(err)
+			throw new Error('Failed to create completion', err)
 		}
 
 		return new Response(response.body, {
 			headers: {
-				"Content-Type": "text/event-stream",
-			},
-		});
+				'Content-Type': 'text/event-stream'
+			}
+		})
 	} catch (err) {
-		console.error(err);
-		throw error(500, "An error occurred");
+		console.error(err)
+		throw error(500, 'An error occurred')
 	}
-	*/
-};
+}
