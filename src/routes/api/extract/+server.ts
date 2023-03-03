@@ -1,11 +1,7 @@
 import { SECRET_API_KEY } from '$env/static/private'
 import type { RequestHandler } from './$types'
 import type { CreateCompletionRequest } from 'openai'
-import { error, type Config } from '@sveltejs/kit'
-
-export const config: Config = {
-	runtime: 'edge'
-}
+import { error } from '@sveltejs/kit'
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
@@ -38,7 +34,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const response = await fetch('https://api.openai.com/v1/completions', {
 			headers: {
-				Authorization: `Bearer ${OPENAI_KEY}`,
+				Authorization: `Bearer ${SECRET_API_KEY}`,
 				'Content-Type': 'application/json'
 			},
 			method: 'POST',
