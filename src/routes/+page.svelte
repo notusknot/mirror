@@ -10,7 +10,7 @@
 	{#if $currentUser}
 		<div class="left">
 			<Todos />
-			<Pomodoro />
+			<!-- Pomodoro / -->
 		</div>
 
 		<div class="right">
