@@ -1,92 +1,18 @@
+<!--
 <script lang="ts">
-	let timerMinutes = 25;
-	let breakMinutes = 5;
-	let minutes = timerMinutes;
-	let seconds = 0;
-	let intervalId: number | null = null;
-	let isBreak = false;
-	let startTime: number | null = null;
-	let isRunning = false;
+	let time = 25 * 60;
+	$: minutes = Math.trunc(time / 60);
+	$: seconds = ('0' + time % 60).slice(-2);
 
-	function startTimer() {
-		isRunning = true;
-		startTime = Date.now();
-		intervalId = window.setInterval(() => {
-			if (seconds !== 0) {
-				seconds--;
-				return;
-			}
-
-			if (minutes !== 0) {
-				minutes--;
-				seconds = 59;
-				return;
-			}
-
-			if (isBreak) {
-				minutes = timerMinutes;
-				isBreak = false;
-			} else {
-				minutes = breakMinutes;
-				isBreak = true;
-			}
-
-			seconds = 59;
-		}, 1000);
-	}
-
-	function stopTimer() {
-		isRunning = false;
-		if (intervalId !== undefined && intervalId !== null) {
-			clearInterval(intervalId);
-		}
-		minutes = timerMinutes;
-		seconds = 0;
-	}
-
-	function handleTimerMinutesChange(event: Event) {
-		const target = event.target as HTMLInputElement;
-		timerMinutes = +target.value;
-		minutes = timerMinutes;
-	}
-
-	function handleBreakMinutesChange(event: Event) {
-		const target = event.target as HTMLInputElement;
-		breakMinutes = +target.value;
-	}
+	$: console.log(time, minutes, seconds);
 </script>
 
-<div class="pomodoro">
-	<div>
-		<p>{isBreak ? "Break" : "Work"}</p>
-		<p>{minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
-	</div>
-
-	{#if !isRunning}
-		<label for="timer-minutes">Timer Minutes:</label>
-		<input
-			type="number"
-			id="timer-minutes"
-			bind:value={timerMinutes}
-			on:input={handleTimerMinutesChange}
-		/>
-
-		<label for="break-minutes">Break Minutes:</label>
-		<input
-			type="number"
-			id="break-minutes"
-			bind:value={breakMinutes}
-			on:input={handleBreakMinutesChange}
-		/>
-
-		<button on:click={startTimer}>Start</button>
-	{:else}
-		<button on:click={stopTimer}>Stop</button>
-	{/if}
+<div>
+	<div contenteditable="true" bind:textContent={time}>{minutes}</div>
+	<span>{minutes}:{seconds}</span>
 </div>
 
 <style>
-
 	input {
 		width: calc(4ch + var(--padding));
 	}
@@ -98,5 +24,101 @@
 
 	input[type="number"] {
 		-moz-appearance: textfield; /* Firefox */
+		appearance: textfield;
+	}
+</style>
+-->
+<script>
+	const minutesToSeconds = (minutes) => minutes * 60;
+	const secondsToMinutes = (seconds) => Math.floor(seconds / 60);
+	const padWithZeroes = (number) => number.toString().padStart(2, "0");
+	const State = { idle: "idle", inProgress: "in progress", resting: "resting" };
+
+	const POMODORO_S = minutesToSeconds(25);
+	const LONG_BREAK_S = minutesToSeconds(20);
+	const SHORT_BREAK_S = minutesToSeconds(5);
+
+	let currentState = State.idle;
+	let pomodoroTime = POMODORO_S;
+	let completedPomodoros = 0;
+	let interval;
+
+	function formatTime(timeInSeconds) {
+		const minutes = secondsToMinutes(timeInSeconds);
+		const remainingSeconds = timeInSeconds % 60;
+		return `${padWithZeroes(minutes)}:${padWithZeroes(remainingSeconds)}`;
+	}
+
+	function startPomodoro() {
+		setState(State.inProgress);
+		interval = setInterval(() => {
+			if (pomodoroTime === 0) {
+				completePomodoro();
+			}
+			pomodoroTime -= 1;
+		}, 1000);
+	}
+
+	function setState(newState) {
+		clearInterval(interval);
+		currentState = newState;
+	}
+
+	function completePomodoro() {
+		completedPomodoros++;
+		if (completedPomodoros === 4) {
+			rest(LONG_BREAK_S);
+			completedPomodoros = 0;
+		} else {
+			rest(SHORT_BREAK_S);
+		}
+	}
+
+	function rest(time) {
+		setState(State.resting);
+		pomodoroTime = time;
+		interval = setInterval(() => {
+			if (pomodoroTime === 0) {
+				idle();
+			}
+			pomodoroTime -= 1;
+		}, 1000);
+	}
+
+	function cancelPomodoro() {
+		// TODO: Add some logic to prompt the user to write down
+		// the cause of the interruption.
+		idle();
+	}
+
+	function idle() {
+		setState(State.idle);
+		pomodoroTime = POMODORO_S;
+	}
+</script>
+
+<section>
+	<time>
+		{formatTime(pomodoroTime)}
+	</time>
+	<footer>
+		<button
+			class="primary"
+			on:click={startPomodoro}
+			disabled={currentState !== State.idle}>start</button
+		>
+		<button
+			on:click={cancelPomodoro}
+			disabled={currentState !== State.inProgress}>cancel</button
+		>
+		<!--button on:click={completePomodoro}>complete</button-->
+	</footer>
+</section>
+
+<style>
+	time {
+		display: block;
+		font-size: 5em;
+		margin-bottom: 0.2em;
 	}
 </style>

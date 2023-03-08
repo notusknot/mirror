@@ -23,21 +23,25 @@
 
 <style>
 	main {
-		display: grid;
-		grid-template-columns: 1fr 1.618fr;
-		grid-template-rows: 1fr;
-		height: 100svh;
+		display: flex;
+		height: 100vh;
 	}
 
 	main > * {
 		padding: calc(var(--padding) * 2);
 	}
 
+	.right {
+		width: 100%;
+	}
+
 	.left {
 		display: grid;
 		grid-template-rows: 1.618fr 1fr;
 		grid-template-columns: 1fr;
+		width: clamp(0px, 100%, 420px);
 		background-color: var(--bg2);
-		border-right: 2px solid var(--bg3);
+		gap: var(--padding);
+		border-right: 3px solid var(--bg3);
 	}
 </style>

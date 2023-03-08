@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { pb, currentUser } from "$lib/pocketbase";
-	import Login from "$lib/Login.svelte";
 	import { redirect } from "@sveltejs/kit";
 
-	import "./styles.css";
+	import "../app.css";
 
 	function signOut() {
 		pb.authStore.clear();

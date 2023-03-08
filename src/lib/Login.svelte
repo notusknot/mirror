@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { currentUser, pb } from "$lib/pocketbase";
+	import { pb } from "$lib/pocketbase";
 
 	let username: string;
 	let password: string;
@@ -8,6 +8,7 @@
 	let loading = false;
 
 	async function login() {
+		errorMessage = "";
 		try {
 			loading = true;
 			await pb.collection("users").authWithPassword(username, password);
@@ -15,12 +16,14 @@
 			username = "";
 			password = "";
 		} catch (err: any) {
+			loading = false;
 			errorMessage = err.message;
 			throw err;
 		}
 	}
 
 	async function signUp() {
+		errorMessage = "";
 		try {
 			const passwordLength = 8;
 			if (password.length < passwordLength) {
@@ -41,42 +44,42 @@
 		}
 	}
 
-
 	function handleKeyUp(event: KeyboardEvent) {
 		capsLockOn = event.getModifierState("CapsLock");
 	}
 </script>
 
-{#if loading}
-	<p> Signing you in... </p>
-{:else}
-	<form on:submit|preventDefault>
-		<label for="username"> Username </label>
-		<input id="username" type="text" bind:value={username} />
+<form on:submit|preventDefault>
+	<label for="username"> Username </label>
+	<input id="username" type="text" bind:value={username} />
 
-		<label for="password"> Password </label>
-		<input
-			id="password"
-			placeholder="at least 8 characters"
-			type="password"
-			bind:value={password}
-			on:keyup={handleKeyUp}
-		/>
+	<label for="password"> Password </label>
+	<input
+		id="password"
+		placeholder="at least 8 characters"
+		type="password"
+		bind:value={password}
+		on:keyup={handleKeyUp}
+	/>
 
-		{#if errorMessage}
-			<span class="error">{errorMessage}</span>
-		{/if}
+	{#if loading}
+		<span class="info">Signing you in...</span>
+	{/if}
 
-		{#if capsLockOn}
-			<span class="error">Caps lock is on</span>
-		{/if}
 
-		<button on:click={login}>Login</button>
+	{#if errorMessage}
+		<span class="info">{errorMessage}</span>
+	{/if}
 
-		<span> If you don't have an account </span>
-		<button on:click={signUp}>Create account</button>
-	</form>
-{/if}
+	{#if capsLockOn}
+		<span class="info">Caps lock is on</span>
+	{/if}
+
+	<button on:click={login}>Login</button>
+
+	<span> If you don't have an account </span>
+	<button on:click={signUp}>Create account</button>
+</form>
 
 <style>
 	form {
@@ -91,7 +94,8 @@
 		width: 100%;
 	}
 
-	#password, #username {
+	#password,
+	#username {
 		margin-bottom: calc(var(--padding));
 	}
 
@@ -105,7 +109,7 @@
 		color: rgba(var(--text-codes), 0.6);
 	}
 
-	.error {
+	.info {
 		color: var(--accent);
 		margin: 0;
 	}

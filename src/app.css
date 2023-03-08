@@ -51,7 +51,7 @@ h1 {
 	--padding: 16px;
 	--text-codes: 55, 53, 47;
 	--text: rgba(var(--text-codes), 1);
-	--accent: #ff91af;
+	--accent: rgb(85, 81, 255);
 	--bg: #ffffff;
 	--bg2: #fbfbfa;
 	--bg3: #f1f1f0;
@@ -60,7 +60,6 @@ h1 {
 body.dark {
 	--text-codes: 255, 255, 255;
 	--text: rgba(var(--text-codes), 0.87);
-	--accent: #ff91af;
 	--bg: #242424;
 	--bg2: #1a1a1a;
 	--bg3: #3b3b3b;
@@ -77,8 +76,8 @@ body.dark {
 button,
 input,
 textarea {
-	border-radius: calc(var(--padding) * 2 / 3);
-	border: 2px solid var(--bg3);
+	border-radius: calc(var(--padding) * 3 / 4);
+	border: 3px solid rgba(var(--text-codes), 0.9);
 	padding: 0.6em 1em;
 	font-weight: 500;
 	color: var(--text);
@@ -99,11 +98,24 @@ input:hover {
 	border-color: var(--accent);
 }
 
+
+input {
+	border: none;
+	width: 100%;
+}
+
+
 .icon-button {
 	padding: 0;
 	font-size: 1.2rem;
 	border: none;
 	background-color: transparent;
+	opacity: 0.75;
+	transition: opacity 250ms
+}
+
+.icon-button:hover {
+	opacity: 1;
 }
 
 ::-webkit-scrollbar {
@@ -122,6 +134,5 @@ input:hover {
 }
 
 [contenteditable]:focus {
-  outline: 2px solid var(--accent);
-  border-radius: calc(var(--padding) / 2);
+	outline: none;
 }

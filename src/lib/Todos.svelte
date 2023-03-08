@@ -2,7 +2,6 @@
 	import { onMount, onDestroy } from "svelte";
 	import { currentUser, pb } from "$lib/pocketbase";
 	import { todos } from "$lib/stores";
-	import { flip } from 'svelte/animate';
 	import type { Todo } from "$lib/stores";
 
 	let todoText: string;
@@ -92,7 +91,7 @@
 					<span
 						class="todo-text"
 						contenteditable="true"
-						on:blur={() => updateTodo(todo)}
+						on:blur={() => updateTodo(todo, todo.text)}
 						bind:textContent={todo.text}
 						class:checked={todo.checked}>{todo.text}</span
 					>
@@ -116,17 +115,17 @@
 				</li>
 			{/each}
 		{/if}
-
-		<input
-			placeholder="manually add task"
-			type="text"
-			on:keydown={(e) => {
-				if (e.key === "Enter") addTodo(todoText);
-			}}
-			on:blur={() => addTodo(todoText)}
-			bind:value={todoText}
-		/>
 	</ul>
+
+	<input
+		placeholder="add task"
+		class="new-task"
+		on:keydown={(e) => {
+			if (e.key === "Enter") addTodo(todoText);
+		}}
+		on:blur={() => addTodo(todoText)}
+		bind:value={todoText}
+	/>
 </div>
 
 <style>
@@ -137,7 +136,12 @@
 		gap: var(--padding);
 	}
 
-	input,
+	.new-task {
+		border: none;
+		padding: 0 calc(var(--padding) * 2.5);
+		width: 100%;
+	}
+
 	button {
 		background-color: var(--bg);
 	}
@@ -186,14 +190,14 @@
 		position: relative;
 		min-width: 24px;
 		max-height: 24px;
-		border: 2px solid var(--bg3);
+		border: 2px solid var(--text);
 		border-radius: 8px;
 		cursor: pointer;
 		background-color: var(--bg);
 	}
 
-	.checkbox:hover,
-	.checkbox:active {
+	.checkbox:hover .checkmark:after,
+	.checkbox:active .checkmark:after {
 		border-color: var(--accent);
 	}
 
