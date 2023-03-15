@@ -1,3 +1,57 @@
+<script lang="ts">
+	import Boop from "$lib/Boop.svelte";
+	import Sun from "$lib/sun.svg?raw";
+	import Moon from "$lib/moon.svg?raw";
+    import { browser } from '$app/environment';
+
+    let darkMode = false;
+
+    function toggleDarkMode() {
+        darkMode = !darkMode;
+
+        localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+
+        darkMode
+            ? document.documentElement.classList.add('dark')
+            : document.documentElement.classList.remove('dark');
+    }
+
+    if (browser) {
+        if (
+            localStorage.theme === 'dark' ||
+            (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        ) {
+            document.documentElement.classList.add('dark');
+            darkMode = true;
+        } else {
+            document.documentElement.classList.remove('dark');
+            darkMode = false;
+        }
+    }
+</script>
+
+<Boop>
+	<input
+		checked={darkMode}
+		on:click={toggleDarkMode}
+		type="checkbox"
+		id="theme-toggle"
+	/>
+	<label class="icon-button" for="theme-toggle">{@html darkMode ? Sun : Moon}</label>
+</Boop>
+
+<style>
+	input {
+		display: none;
+	}
+
+	label {
+		color: var(--text);
+		font-size: 2rem;
+	}
+</style>
+<!--
+
 <script>
 	import { onMount } from "svelte";
 
@@ -31,16 +85,11 @@
 	const toggleTheme = () => {
 		const stored = localStorage.getItem(STORAGE_KEY);
 
-		if (stored) {
-			// clear storage
-			localStorage.removeItem(STORAGE_KEY);
-		} else {
 			// store opposite of preference
 			localStorage.setItem(
 				STORAGE_KEY,
 				prefersDarkThemes() ? THEMES.LIGHT : THEMES.DARK
 			);
-		}
 
 		// TODO: apply new theme
 		applyTheme();
@@ -53,10 +102,9 @@
 
 <input
 	type="checkbox"
-	checked={currentTheme !== THEMES.DARK}
+	checked={currentTheme === THEMES.DARK}
 	on:click={toggleTheme}
 />
-<!--
 
 <script lang="ts">
 	import Boop from "$lib/Boop.svelte";
@@ -65,6 +113,7 @@
 	import { onMount } from "svelte";
 
 	let themeIcon = Sun;
+
 
     const htmlElement = document.querySelector("html");
 
@@ -75,7 +124,7 @@
 			htmlElement.setAttribute("data-theme", "light");
 		}
 
-		sessionStorage.setItem("darkMode", darkMode.toString());
+		localStorage.setItem("darkMode", darkMode.toString());
 	}
 
 	function isDarkMode() {
@@ -83,7 +132,7 @@
 			return false;
 		}
 
-		const sessionData = window.sessionStorage.getItem("darkMode");
+		const sessionData = window.localStorage.getItem("darkMode");
 		if (sessionData) {
 			return "true" === sessionData;
 		}

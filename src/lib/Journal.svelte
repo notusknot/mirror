@@ -4,6 +4,7 @@
 	import { writable } from "svelte/store";
 	import type { CreateCompletionResponse } from "openai";
 	import { SSE } from "sse.js";
+	import { flip } from "svelte/animate";
 
 	// TODO comment this code nicely with *why*
 	let context = "";
@@ -53,9 +54,6 @@
 		unsubscribe?.();
 	});
 
-	let journalText = "";
-	let journalTitle = "";
-
 	async function createJournal() {
 		const data = {
 			title: "Title",
@@ -69,7 +67,11 @@
 		await pb.collection("journals").delete(journal.id);
 	};
 
-	const updateJournal = async (journal: Journal, field: string, content: string) => {
+	const updateJournal = async (
+		journal: Journal,
+		field: string,
+		content: string
+	) => {
 		if (field == "title") {
 			await pb.collection("journals").update(journal.id, { title: content });
 		} else if (field == "text") {
@@ -169,23 +171,26 @@
 </script>
 
 <div class="journals">
+	<button class="icon-button" on:click={createJournal}>+</button>
+
 	<div class="content">
 		{#each $journals as journal (journal.id)}
-			<div class="entry">
+			<div class="entry" animate:flip="{{duration:300}}">
 				<span class="entry-date">{formatDate(journal.created)}: </span>
-				<span 
-					contenteditable 
+				<span
+					contenteditable
 					on:blur={() => updateJournal(journal, "title", journal.title)}
-					bind:textContent={journal.title} />
+					bind:textContent={journal.title}
+				/>
 				<p
 					contenteditable
 					on:blur={() => updateJournal(journal, "text", journal.text)}
 					bind:textContent={journal.text}
 				/>
-				
+
 				<button
 					class="icon-button delete-button"
-					aria-label="Delete todo"
+					aria-label="Delete entry"
 					on:click={() => deleteJournal(journal)}
 				>
 					<svg
@@ -202,14 +207,13 @@
 			</div>
 		{/each}
 	</div>
-
-	<button class="icon-button" on:click={createJournal}> + </button>
 </div>
 
 <style>
 	.journals {
 		display: flex;
 		flex-direction: column;
+		height: 100%;
 	}
 
 	.content {
@@ -217,17 +221,18 @@
 		flex-direction: column;
 		width: clamp(160px, 100%, 720px);
 		margin: 0 auto;
-		overflow-y: scroll;
+		overflow-y: auto;
 		gap: calc(var(--padding) * 2);
-		padding-bottom: var(--padding);
 		height: 100%;
 	}
 
 	.entry {
 		position: relative;
 		background-color: var(--bg2);
+		line-height: calc(1em + 0.5rem);
 		padding: var(--padding);
 		border-radius: var(--padding);
+		border: 2px solid var(--bg3);
 	}
 
 	.entry-date {

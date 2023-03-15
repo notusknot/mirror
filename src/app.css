@@ -4,9 +4,9 @@
 *::after {
 	box-sizing: border-box;
 }
+
 * {
 	margin: 0;
-	line-height: calc(1em + 0.5rem);
 	transition: background-color 250ms, border-color 250ms;
 	-webkit-tap-highlight-color: transparent;
 	-webkit-touch-callout: none;
@@ -15,36 +15,16 @@
 html,
 body {
 	height: 100%;
-	overflow: hidden;
 	-webkit-font-smoothing: antialiased;
 	color: var(--text);
 	background-color: var(--bg);
 	font-size: 16px;
 }
 
-body {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-}
-
 input,
 button,
 textarea {
 	font: inherit;
-}
-p,
-h1,
-h2,
-span {
-	overflow-wrap: break-word;
-	word-break: break-word;
-}
-
-h1 {
-	text-align: center;
 }
 
 :root {
@@ -57,7 +37,7 @@ h1 {
 	--bg3: #f1f1f0;
 }
 
-body.dark {
+html.dark {
 	--text-codes: 255, 255, 255;
 	--text: rgba(var(--text-codes), 0.87);
 	--bg: #242424;
@@ -74,10 +54,9 @@ body.dark {
 }
 
 button,
-input,
-textarea {
+input {
 	border-radius: calc(var(--padding) * 3 / 4);
-	border: 3px solid rgba(var(--text-codes), 0.9);
+	border: 2px solid var(--bg3);
 	padding: 0.6em 1em;
 	font-weight: 500;
 	color: var(--text);
@@ -85,49 +64,21 @@ textarea {
 	cursor: pointer;
 }
 
-button:focus,
-button:focus-visible,
-button:hover,
-textarea:focus,
-textarea:focus-visible,
-textarea:hover,
-input:focus,
-input:focus-visible,
-input:hover {
-	outline: none;
-	border-color: var(--accent);
-}
-
-
-input {
-	border: none;
-	width: 100%;
-}
-
-
 .icon-button {
 	padding: 0;
 	font-size: 1.2rem;
 	border: none;
 	background-color: transparent;
-	opacity: 0.75;
-	transition: opacity 250ms
-}
-
-.icon-button:hover {
-	opacity: 1;
 }
 
 ::-webkit-scrollbar {
 	width: 6px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
 	background: var(--bg);
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
 	background: var(--bg3);
 	border-radius: 5px;

@@ -66,7 +66,6 @@
 		<span class="info">Signing you in...</span>
 	{/if}
 
-
 	{#if errorMessage}
 		<span class="info">{errorMessage}</span>
 	{/if}
