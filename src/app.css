@@ -4,9 +4,9 @@
 *::after {
 	box-sizing: border-box;
 }
+
 * {
 	margin: 0;
-	line-height: calc(1em + 0.5rem);
 	transition: background-color 250ms, border-color 250ms;
 	-webkit-tap-highlight-color: transparent;
 	-webkit-touch-callout: none;
@@ -15,19 +15,10 @@
 html,
 body {
 	height: 100%;
-	overflow: hidden;
 	-webkit-font-smoothing: antialiased;
 	color: var(--text);
 	background-color: var(--bg);
 	font-size: 16px;
-}
-
-body {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
 }
 
 input,
@@ -35,32 +26,20 @@ button,
 textarea {
 	font: inherit;
 }
-p,
-h1,
-h2,
-span {
-	overflow-wrap: break-word;
-	word-break: break-word;
-}
-
-h1 {
-	text-align: center;
-}
 
 :root {
 	--padding: 16px;
 	--text-codes: 55, 53, 47;
 	--text: rgba(var(--text-codes), 1);
-	--accent: #ff91af;
+	--accent: rgb(85, 81, 255);
 	--bg: #ffffff;
 	--bg2: #fbfbfa;
 	--bg3: #f1f1f0;
 }
 
-body.dark {
+html.dark {
 	--text-codes: 255, 255, 255;
 	--text: rgba(var(--text-codes), 0.87);
-	--accent: #ff91af;
 	--bg: #242424;
 	--bg2: #1a1a1a;
 	--bg3: #3b3b3b;
@@ -75,28 +54,14 @@ body.dark {
 }
 
 button,
-input,
-textarea {
-	border-radius: calc(var(--padding) * 2 / 3);
+input {
+	border-radius: calc(var(--padding) * 3 / 4);
 	border: 2px solid var(--bg3);
 	padding: 0.6em 1em;
 	font-weight: 500;
 	color: var(--text);
 	background-color: var(--bg2);
 	cursor: pointer;
-}
-
-button:focus,
-button:focus-visible,
-button:hover,
-textarea:focus,
-textarea:focus-visible,
-textarea:hover,
-input:focus,
-input:focus-visible,
-input:hover {
-	outline: none;
-	border-color: var(--accent);
 }
 
 .icon-button {
@@ -110,18 +75,15 @@ input:hover {
 	width: 6px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
 	background: var(--bg);
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
 	background: var(--bg3);
 	border-radius: 5px;
 }
 
 [contenteditable]:focus {
-  outline: 2px solid var(--accent);
-  border-radius: calc(var(--padding) / 2);
+	outline: none;
 }

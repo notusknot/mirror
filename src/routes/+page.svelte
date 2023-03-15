@@ -10,7 +10,7 @@
 	{#if $currentUser}
 		<div class="left">
 			<Todos />
-			<Pomodoro />
+			<!-- Pomodoro / -->
 		</div>
 
 		<div class="right">
@@ -23,21 +23,35 @@
 
 <style>
 	main {
-		display: grid;
-		grid-template-columns: 1fr 1.618fr;
-		grid-template-rows: 1fr;
-		height: 100svh;
+		display: flex;
+		height: 100%;
 	}
 
-	main > * {
+	.left, .right {
 		padding: calc(var(--padding) * 2);
+	}
+
+	.right {
+		width: 100%;
+		height: 100%;
 	}
 
 	.left {
 		display: grid;
-		grid-template-rows: 1.618fr 1fr;
 		grid-template-columns: 1fr;
 		background-color: var(--bg2);
+		gap: var(--padding);
 		border-right: 2px solid var(--bg3);
+	}
+
+	@media screen and (max-width: 600px) {
+		main {
+			flex-direction: column;
+		}
+
+		.left {
+			border-bottom: 2px solid var(--bg3);
+			border-right: none;
+		}
 	}
 </style>

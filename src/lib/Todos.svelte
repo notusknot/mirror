@@ -2,8 +2,8 @@
 	import { onMount, onDestroy } from "svelte";
 	import { currentUser, pb } from "$lib/pocketbase";
 	import { todos } from "$lib/stores";
-	import { flip } from 'svelte/animate';
 	import type { Todo } from "$lib/stores";
+	import { flip } from 'svelte/animate';
 
 	let todoText: string;
 	let unsubscribe: () => void;
@@ -74,88 +74,65 @@
 </script>
 
 <div class="todos">
-	<ul>
-		{#if $todos.length === 0}
-			<p>You haven't added any tasks yet</p>
-		{:else}
-			{#each $todos as todo (todo.id)}
-				<li>
-					<label class="checkbox">
-						<input
-							type="checkbox"
-							aria-label="Toggle completed"
-							checked={todo.checked}
-							on:change={() => toggleChecked(todo)}
-						/>
-						<span class="checkmark" />
-					</label>
-					<span
-						class="todo-text"
-						contenteditable="true"
-						on:blur={() => updateTodo(todo)}
-						bind:textContent={todo.text}
-						class:checked={todo.checked}>{todo.text}</span
-					>
+	<input
+		placeholder="add task"
+		class="new-task"
+		on:keydown={(e) => {
+			if (e.key === "Enter") addTodo(todoText);
+		}}
+		on:blur={() => addTodo(todoText)}
+		bind:value={todoText}
+	/>
 
-					<button
-						class="icon-button delete-button"
-						aria-label="Delete todo"
-						on:click={() => deleteTodo(todo)}
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="1em"
-							height="1em"
-							viewBox="0 0 15 15"
-							><path
-								fill="currentColor"
-								d="M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27Z"
-							/></svg
-						>
-					</button>
-				</li>
-			{/each}
-		{/if}
+	{#if $todos.length === 0}
+		<p>You haven't added any tasks yet</p>
+	{:else}
+		{#each $todos as todo (todo.id)}
+			<li animate:flip="{{duration: 200}}">
+				<label class="checkbox">
+					<input
+						type=checkbox
+						checked={todo.checked}
+						on:change={() => toggleChecked(todo)}
+					/>
+					<span class="checkmark" />
+				</label>
+				<span
+					class="todo-text"
+					contenteditable="true"
+					on:blur={() => updateTodo(todo, todo.text)}
+					bind:textContent={todo.text}
+					class:checked={todo.checked} />
 
-		<input
-			placeholder="manually add task"
-			type="text"
-			on:keydown={(e) => {
-				if (e.key === "Enter") addTodo(todoText);
-			}}
-			on:blur={() => addTodo(todoText)}
-			bind:value={todoText}
-		/>
-	</ul>
+				<button
+					class="icon-button delete-button"
+					aria-label="Delete todo"
+					on:click={() => deleteTodo(todo)}
+				>
+				</button>
+			</li>
+		{/each}
+	{/if}
 </div>
 
 <style>
 	.todos {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
 		gap: var(--padding);
 	}
 
-	input,
-	button {
-		background-color: var(--bg);
-	}
-
-	ul {
-		padding: 0px;
+	.new-task {
+		border: none;
+		padding: 0;
 		width: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: var(--padding);
+		outline: none;
 	}
 
 	li {
+		display: flex;
 		position: relative;
 		gap: var(--padding);
-		width: 100%;
-		display: flex;
 	}
 
 	.todo-text {
@@ -164,7 +141,17 @@
 
 	.delete-button {
 		position: absolute;
+		background: no-repeat 50% 50% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Cpath fill='%2337352f' d='M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27Z'%3E%3C/path%3E%3C/svg%3E");
+		top: 3px;
 		right: 0;
+		width: 1em;
+		height: 100%;
+		opacity: 0;
+		transition: opacity 250ms;
+	}
+
+	li:hover .delete-button {
+		opacity: 1;
 	}
 
 	.todo-text::before {
@@ -192,8 +179,8 @@
 		background-color: var(--bg);
 	}
 
-	.checkbox:hover,
-	.checkbox:active {
+	.checkbox:hover .checkmark:after,
+	.checkbox:active .checkmark:after {
 		border-color: var(--accent);
 	}
 
